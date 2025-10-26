@@ -1,0 +1,36 @@
+<div class="logo">
+    <a href="#" class="simple-text logo-mini">
+      <div class="logo-img">
+          <div class="logo-text">ITM</div>
+      </div>
+    </a>
+    <a href="#" class="simple-text logo-normal">
+        Sistema ITM
+    </a>
+</div>
+<div class="sidebar-wrapper">
+    <ul class="nav">
+        <li routerLinkActive="active" *ngFor="let menuItem of menuItems" class="{{menuItem.class}} nav-item">
+            <a [routerLink]="[menuItem.path]">
+                <i class="now-ui-icons {{menuItem.icon}}"></i>
+                <p>{{menuItem.title}}</p>
+            </a>
+        </li>
+    </ul>
+    
+    <!-- Información del usuario y logout -->
+    <div class="user-info" *ngIf="authService.getCurrentUser()">
+        <div class="user-details">
+            <div class="user-avatar">
+                <i class="now-ui-icons users_single-02"></i>
+            </div>
+            <div class="user-text">
+                <div class="user-name">{{authService.getCurrentUser()?.nombre}} {{authService.getCurrentUser()?.apellido}}</div>
+                <div class="user-role">{{authService.getCurrentUser()?.rol | titlecase}}</div>
+            </div>
+        </div>
+        <button class="logout-btn" (click)="logout()" title="Cerrar Sesión">
+            <i class="now-ui-icons media-1_button-power"></i>
+        </button>
+    </div>
+</div>
