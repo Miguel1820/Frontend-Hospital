@@ -4,20 +4,30 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 declare interface RouteInfo {
-    path: string;
-    title: string;
-    icon: string;
-    class: string;
-    roles?: string[];
+  path: string;
+  title: string;
+  icon: string;
+  class: string;
+  roles?: string[];
 }
 
 export const ROUTES: RouteInfo[] = [
-    { path: '/dashboard', title: 'Dashboard',  icon: 'design_app', class: '' },
-    { path: '/categorias', title: 'Categorías',  icon:'shopping_basket', class: '', roles: ['admin'] },
-    { path: '/usuarios', title: 'Usuarios',  icon:'users_single-02', class: '', roles: ['admin'] },
-    { path: '/productos', title: 'Productos',  icon:'shopping_box', class: '' },
-    { path: '/notifications', title: 'Notificaciones',  icon:'ui-1_bell-53', class: '', roles: ['admin'] },
-    { path: '/upgrade', title: 'Configuración',  icon:'objects_spaceship', class: 'active active-pro', roles: ['admin'] }
+  { path: '/dashboard', title: 'Dashboard', icon: 'design_app', class: '' },
+
+  // Secciones del hospital
+  { path: '/paciente', title: 'Pacientes', icon: 'users_single-02', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+  { path: '/usuario', title: 'Usuarios', icon: 'users_circle-08', class: '', roles: ['admin'] },
+  { path: '/cita', title: 'Citas', icon: 'ui-1_calendar-60', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+  { path: '/enfermera', title: 'Enfermeras', icon: 'users_single-02', class: '', roles: ['admin'] },
+  { path: '/medico', title: 'Medicos', icon: 'users_single-02', class: '', roles: ['admin'] },
+  { path: '/factura', title: 'Facturas', icon: 'shopping_credit-card', class: '', roles: ['admin'] },
+  { path: '/factura_detalle', title: 'Detalle Factura', icon: 'files_single-copy-04', class: '', roles: ['admin'] },
+  { path: '/historial_entrada', title: 'Historial Entradas', icon: 'files_paper', class: '', roles: ['admin', 'enfermera'] },
+  { path: '/historial_medico', title: 'Historial Médico', icon: 'health_ambulance', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+  { path: '/hospitalizacion', title: 'Hospitalizaciones', icon: 'objects_key-25', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+
+  // Configuración final
+  { path: '/configuracion', title: 'Configuración', icon: 'objects_spaceship', class: 'active active-pro', roles: ['admin'] }
 ];
 
 @Component({
@@ -33,9 +43,10 @@ export class SidebarComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit() {
+    // Filtra solo los menús que el usuario puede ver
     this.menuItems = ROUTES.filter(menuItem => this.canAccessMenuItem(menuItem));
   }
 
@@ -49,12 +60,9 @@ export class SidebarComponent implements OnInit {
     const userRole = this.authService.getUserRole();
     return userRole ? menuItem.roles.includes(userRole) : false;
   }
-  
+
   isMobileMenu() {
-      if ( window.innerWidth > 991) {
-          return false;
-      }
-      return true;
+    return window.innerWidth <= 991;
   }
 
   logout() {

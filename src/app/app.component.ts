@@ -13,6 +13,13 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
         <app-sidebar></app-sidebar>
       </div>
       <div class="main-panel">
+
+        <button 
+          class="hamburger-btn d-lg-none"
+          (click)="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+
         <div class="content">
           <router-outlet></router-outlet>
         </div>
@@ -20,54 +27,112 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
     </div>
   `,
   styles: [`
+    /* ---------- WRAPPER GENERAL ---------- */
     .wrapper {
       display: flex;
       min-height: 100vh;
     }
 
+    /* ---------- SIDEBAR ---------- */
     .sidebar {
       position: fixed;
       top: 0;
       bottom: 0;
       left: 0;
       z-index: 1000;
-      width: 260px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
+      width: 280px;
+      background: linear-gradient(180deg, #0f9b0f 0%, #000000 100%);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Poppins', sans-serif;
+      transition: transform 0.3s ease;
     }
 
-    .sidebar[data-color="red"] {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
 
-    .main-panel {
-      flex: 1;
-      margin-left: 260px;
-      background: #f8f9fa;
-      min-height: 100vh;
-    }
-
-    .content {
-      padding: 0;
-    }
-
+    /*------ Responsive: Ocultar sidebar en móvil ------*/
     @media (max-width: 991px) {
       .sidebar {
-        transform: translate3d(-260px, 0, 0);
-        transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+        transform: translateX(-100%);
       }
-      
       .sidebar.show {
-        transform: translate3d(0, 0, 0);
+        transform: translateX(0);
       }
-      
+    }
+
+    /* ---------- MAIN PANEL ---------- */
+    .main-panel {
+      margin-left: 280px;
+      flex: 1;
+      min-height: 100vh;
+      background: #1973cdff;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* ---------- CONTENT AREA ---------- */
+    .content {
+      padding: 20px;
+    }
+
+
+    /* Ajuste en móvil cuando el sidebar está abierto */
+    @media (max-width: 991px) {
       .main-panel {
         margin-left: 0;
       }
     }
+
+    /* ---------- BOTÓN HAMBURGUESA PARA MOVILES ---------- */
+    .hamburger-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1100;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: #333;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .hamburger-btn:hover {
+      background: white;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Ocultar boton en pantallas grandes */
+    .d-lg-none {
+      display: block;
+    }
+    @media (min-width: 992px) {
+      .d-lg-none {
+        display: none !important;
+      }
+    }
+
   `]
 })
 export class AppComponent {
   title = 'frontend-angular-clean-architecture';
+
+  /** Controla si el sidebar está visible en móvil */
+  sidebarOpen = false;
+
+
+  /** Alterna el estado del sidebar (abrir/cerrar) */
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+    console.log('Sidebar:', this.sidebarOpen ? 'ABIERTO' : 'CERRADO'); // ← PARA DEBUG
+  }
+  
 }
