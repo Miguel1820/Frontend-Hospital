@@ -12,22 +12,22 @@ declare interface RouteInfo {
 }
 
 export const ROUTES: RouteInfo[] = [
-  { path: '/dashboard', title: 'Dashboard', icon: 'design_app', class: '' },
+  { path: '/dashboard', title: 'Dashboard', icon: 'fas fa-tachometer-alt', class: '' },
 
   // Secciones del hospital
-  { path: '/paciente', title: 'Pacientes', icon: 'users_single-02', class: '', roles: ['admin', 'doctor', 'enfermera'] },
-  { path: '/usuario', title: 'Usuarios', icon: 'users_circle-08', class: '', roles: ['admin'] },
-  { path: '/cita', title: 'Citas', icon: 'ui-1_calendar-60', class: '', roles: ['admin', 'doctor', 'enfermera'] },
-  { path: '/enfermera', title: 'Enfermeras', icon: 'users_single-02', class: '', roles: ['admin'] },
-  { path: '/medico', title: 'Medicos', icon: 'users_single-02', class: '', roles: ['admin'] },
-  { path: '/factura', title: 'Facturas', icon: 'shopping_credit-card', class: '', roles: ['admin'] },
-  { path: '/factura_detalle', title: 'Detalle Factura', icon: 'files_single-copy-04', class: '', roles: ['admin'] },
-  { path: '/historial_entrada', title: 'Historial Entradas', icon: 'files_paper', class: '', roles: ['admin', 'enfermera'] },
-  { path: '/historial_medico', title: 'Historial Médico', icon: 'health_ambulance', class: '', roles: ['admin', 'doctor', 'enfermera'] },
-  { path: '/hospitalizacion', title: 'Hospitalizaciones', icon: 'objects_key-25', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+  { path: '/paciente', title: 'Pacientes', icon: 'fas fa-user-injured', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+  { path: '/usuario', title: 'Usuarios', icon: 'fas fa-users-cog', class: '', roles: ['admin'] },
+  { path: '/cita', title: 'Citas', icon: 'fas fa-calendar-check', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+  { path: '/enfermera', title: 'Enfermeras', icon: 'fas fa-user-nurse', class: '', roles: ['admin'] },
+  { path: '/medico', title: 'Medicos', icon: 'fas fa-user-md', class: '', roles: ['admin'] },
+  { path: '/factura', title: 'Facturas', icon: 'fas fa-file-invoice-dollar', class: '', roles: ['admin'] },
+  { path: '/factura_detalle', title: 'Detalle Factura', icon: 'fas fa-receipt', class: '', roles: ['admin'] },
+  { path: '/historial_entrada', title: 'Historial Entradas', icon: 'fas fa-clipboard-list', class: '', roles: ['admin', 'enfermera'] },
+  { path: '/historial_medico', title: 'Historial Médico', icon: 'fas fa-file-medical', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+  { path: '/hospitalizacion', title: 'Hospitalizaciones', icon: 'fas fa-procedures', class: '', roles: ['admin', 'doctor', 'enfermera'] },
 
   // Configuración final
-  { path: '/configuracion', title: 'Configuración', icon: 'objects_spaceship', class: 'active active-pro', roles: ['admin'] }
+  { path: '/configuracion', title: 'Configuración', icon: 'fas fa-cog', class: 'active active-pro', roles: ['admin'] }
 ];
 
 @Component({
