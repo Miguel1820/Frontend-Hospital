@@ -17,7 +17,7 @@ export class PacienteService {
     return this.http.get<Paciente[]>(`${this.baseUrl}${this.endpoint}`);
   }
 
-  getById(id: string): Observable<Paciente> {
+  getById(id: number): Observable<Paciente> {
     return this.http.get<Paciente>(`${this.baseUrl}${this.endpoint}/${id}`);
   }
 
@@ -25,11 +25,11 @@ export class PacienteService {
     return this.http.post<Paciente>(`${this.baseUrl}${this.endpoint}`, paciente);
   }
 
-  update(id: string, paciente: Partial<Paciente>): Observable<Paciente> {
+  update(id: number, paciente: Partial<Paciente>): Observable<Paciente> {
     return this.http.put<Paciente>(`${this.baseUrl}${this.endpoint}/${id}`, paciente);
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}${this.endpoint}/${id}`);
   }
 }

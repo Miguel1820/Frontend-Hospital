@@ -2,56 +2,56 @@
  * Modelo para la entidad Paciente
  */
 export interface Paciente {
-  id: string;
-  nombre: string;
+  id: number;
+  primer_nombre: string;
+  segundo_nombre: string;
   apellido: string;
   email: string;
-  telefono?: string;
+  telefono: string;
   fecha_nacimiento: string;
-  direccion?: string;
+  direccion: string;
   activo: boolean;
-  created_at: string;
-  updated_at?: string;
+  id_usuario_creacion: number;
 }
 
 /**
  * Modelo para crear un nuevo paciente
  */
 export interface CreatePacienteRequest {
-  id: string;
-  nombre: string;
+  id: number;
+  primer_nombre: string;
+  segundo_nombre: string;
   apellido: string;
   email: string;
-  telefono?: string;
+  telefono: string;
   fecha_nacimiento: string;
-  direccion?: string;
+  direccion: string;
   activo: boolean;
-  created_at: string;
-  updated_at?: string;
+  id_usuario_creacion: number;
 }
 
 /**
  * Modelo para actualizar un paciente
  */
 export interface UpdatePacienteRequest {
-  id: string;
-  nombre: string;
+  id: number;
+  primer_nombre: string;
+  segundo_nombre: string;
   apellido: string;
   email: string;
-  telefono?: string;
+  telefono: string;
   fecha_nacimiento: string;
-  direccion?: string;
+  direccion: string;
   activo: boolean;
-  created_at: string;
-  updated_at?: string;
+  id_usuario_creacion: number;
 }
 
 /**
  * Modelo para filtros de pacientes
  */
 export interface PacienteFilters {
-  nombre?: string;
-  apellido?: string;
-  email?: string;
-  activo?: boolean;
+  primer_nombre: string;
+  apellido: string;
+  email: string;
+  activo: string;
 }

@@ -20,19 +20,26 @@ export class PacienteListComponent implements OnInit {
   totalPages = 1;
   pageSize = 10;
 
-  filters: PacienteFilters = {};
+  filters: PacienteFilters = {
+    primer_nombre: '',
+    apellido: '',
+    email: '',
+    activo: ''
+  };
 
   showModal = false;
   editingPaciente: Paciente | null = null;
 
-  pacienteForm = {
-    nombre: '',
+  pacienteForm: any = {
+    primer_nombre: '',
+    segundo_nombre: '',
     apellido: '',
     email: '',
     telefono: '',
     fecha_nacimiento: '',
     direccion: '',
     activo: true,
+    id_usuario_creacion: "11111111-1111-1111-1111-111111111111"
   };
 
   constructor(private pacienteService: PacienteService) {}
@@ -57,24 +64,39 @@ export class PacienteListComponent implements OnInit {
     });
   }
 
-  onFilterChange(): void {}
-
-  clearFilters(): void {
-    this.filters = {};
+  onFilterChange(): void {
+    this.currentPage = 1;
+    this.loadPacientes();
   }
 
-  goToPage(page: number): void {}
+  clearFilters(): void {
+    this.filters = {
+      primer_nombre: '',
+      apellido: '',
+      email: '',
+      activo: ''
+    };
+    this.loadPacientes();
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.loadPacientes();
+  }
 
   openCreateModal(): void {
     this.editingPaciente = null;
     this.pacienteForm = {
-      nombre: '',
+      primer_nombre: '',
+      segundo_nombre: '',
       apellido: '',
       email: '',
       telefono: '',
       fecha_nacimiento: '',
       direccion: '',
       activo: true,
+      id_usuario_creacion: "11111111-1111-1111-1111-111111111111"
     };
     this.showModal = true;
   }
@@ -82,13 +104,15 @@ export class PacienteListComponent implements OnInit {
   editPaciente(p: Paciente): void {
     this.editingPaciente = p;
     this.pacienteForm = {
-      nombre: p.nombre,
+      primer_nombre: p.primer_nombre,
+      segundo_nombre: p.segundo_nombre || '',
       apellido: p.apellido,
       email: p.email,
       telefono: p.telefono || '',
       fecha_nacimiento: p.fecha_nacimiento,
       direccion: p.direccion || '',
-      activo: p.activo
+      activo: p.activo,
+      id_usuario_creacion: p.id_usuario_creacion
     };
     this.showModal = true;
   }
@@ -98,34 +122,45 @@ export class PacienteListComponent implements OnInit {
   }
 
   savePaciente(): void {
-    if (!this.pacienteForm.nombre.trim() || !this.pacienteForm.apellido.trim() || !this.pacienteForm.email.trim()) {
-      alert('Nombre, apellido y email son obligatorios');
+
+    if (!this.pacienteForm.primer_nombre.trim() ||
+        !this.pacienteForm.apellido.trim() ||
+        !this.pacienteForm.email.trim()) {
+      alert('Primer nombre, apellido y email son obligatorios');
       return;
     }
 
+    // Forzamos UUID por ahora
+    this.pacienteForm.id_usuario_creacion = "11111111-1111-1111-1111-111111111111";
+
+    console.log("Payload enviado al backend:", this.pacienteForm);
+
     if (this.editingPaciente) {
-      this.pacienteService.update(this.editingPaciente.id, this.pacienteForm).subscribe({
-        next: () => {
+      this.pacienteService.update(Number(this.editingPaciente.id), this.pacienteForm).subscribe({
+        next: (resp) => {
+          console.log('Respuesta backend (update):', resp);
           this.loadPacientes();
           this.closeModal();
-        }
+        },
+        error: (err) => console.error('Error en update:', err)
       });
+
     } else {
       this.pacienteService.create(this.pacienteForm).subscribe({
-        next: () => {
+        next: (resp) => {
+          console.log('Respuesta backend (create):', resp);
           this.loadPacientes();
           this.closeModal();
-        }
+        },
+        error: (err) => console.error('Error en create:', err)
       });
     }
   }
 
   deletePaciente(p: Paciente): void {
-    if (confirm(`¿Seguro que deseas eliminar a ${p.nombre}?`)) {
-      this.pacienteService.delete(p.id).subscribe({
-        next: () => {
-          this.loadPacientes();
-        }
+    if (confirm(`¿Seguro que deseas eliminar a ${p.primer_nombre}?`)) {
+      this.pacienteService.delete(Number(p.id)).subscribe({
+        next: () => this.loadPacientes()
       });
     }
   }

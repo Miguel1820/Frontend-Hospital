@@ -16,7 +16,7 @@
               type="text" 
               class="form-control" 
               placeholder="Buscar por nombre..."
-              [(ngModel)]="filters.nombre"
+              [(ngModel)]="filters.primer_nombre"
               (input)="onFilterChange()"
             >
           </div>
@@ -88,7 +88,7 @@
 
             <tr *ngFor="let p of pacientes">
               <td>{{ p.id }}</td>
-              <td>{{ p.nombre }}</td>
+              <td>{{ p.primer_nombre }} {{ p.segundo_nombre }}</td>
               <td>{{ p.apellido }}</td>
               <td>{{ p.email }}</td>
               <td>{{ p.telefono || '-' }}</td>
@@ -164,8 +164,8 @@
                   <label>Nombre *</label>
                   <input type="text"
                     class="form-control"
-                    [(ngModel)]="pacienteForm.nombre"
-                    name="nombre"
+                    [(ngModel)]="pacienteForm.primer_nombre"
+                    name="primer_nombre"
                     required>
                 </div>
               </div>
