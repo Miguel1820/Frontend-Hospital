@@ -5,38 +5,45 @@ export interface Paciente {
   id: string;
   nombre: string;
   apellido: string;
-  documento: string;
-  telefono?: string; //opcional
-  email?: string; //opcional
-  activo: boolean; 
-  fecha_creacion: string;
-  fecha_actualizacion?: string;
+  email: string;
+  telefono?: string;
+  fecha_nacimiento: string;
+  direccion?: string;
+  activo: boolean;
+  created_at: string;
+  updated_at?: string;
 }
 
 /**
  * Modelo para crear un nuevo paciente
  */
 export interface CreatePacienteRequest {
+  id: string;
   nombre: string;
   apellido: string;
-  documento: string;
+  email: string;
   telefono?: string;
-  email?: string;
   fecha_nacimiento: string;
-  direccion: string;
-  id_usuario_creacion: string;
+  direccion?: string;
+  activo: boolean;
+  created_at: string;
+  updated_at?: string;
 }
 
 /**
  * Modelo para actualizar un paciente
  */
 export interface UpdatePacienteRequest {
-  nombre?: string;
-  apellido?: string;
-  documento?: string;
+  id: string;
+  nombre: string;
+  apellido: string;
+  email: string;
   telefono?: string;
-  email?: string;
-  activo?: boolean;
+  fecha_nacimiento: string;
+  direccion?: string;
+  activo: boolean;
+  created_at: string;
+  updated_at?: string;
 }
 
 /**
@@ -45,10 +52,6 @@ export interface UpdatePacienteRequest {
 export interface PacienteFilters {
   nombre?: string;
   apellido?: string;
-  documento?: string;
-  telefono?: string;
   email?: string;
   activo?: boolean;
-  fecha_desde?: string;
-  fecha_hasta?: string;
 }

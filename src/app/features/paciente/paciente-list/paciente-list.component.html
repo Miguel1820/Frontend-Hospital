@@ -1,236 +1,249 @@
-<div class="app-background">
-  <div class="app-overlay"></div>
+<div class="paciente-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Pacientes</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">
+        Nuevo Paciente
+      </button>
+    </div>
 
-    <div class="paciente-list">
-    <div class="card">
-        <div class="card-header">
-        <h2 class="card-title">Gestión de Pacientes</h2>
-        <button class="btn btn-success" (click)="openCreateModal()">
-            Nuevo Paciente
-        </button>
+    <div class="card-body">
+      <!-- Filtros -->
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Buscar por nombre..."
+              [(ngModel)]="filters.nombre"
+              (input)="onFilterChange()"
+            >
+          </div>
+
+          <div class="col-md-3">
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Buscar por apellido..."
+              [(ngModel)]="filters.apellido"
+              (input)="onFilterChange()"
+            >
+          </div>
+
+          <div class="col-md-3">
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Buscar por email..."
+              [(ngModel)]="filters.email"
+              (input)="onFilterChange()"
+            >
+          </div>
+
+          <div class="col-md-2">
+            <select 
+              class="form-control"
+              [(ngModel)]="filters.activo"
+              (change)="onFilterChange()"
+            >
+              <option value="">Todos los estados</option>
+              <option value="true">Activos</option>
+              <option value="false">Inactivos</option>
+            </select>
+          </div>
+
+          <div class="col-md-1">
+            <button class="btn btn-secondary" (click)="clearFilters()">
+              Limpiar
+            </button>
+          </div>
         </div>
+      </div>
 
-        <div class="card-body">
-        <!-- Filtros -->
-        <div class="filters mb-3">
-            <div class="row">
-            <div class="col-md-3">
-                <input 
-                type="text" 
-                class="form-control" 
-                placeholder="Buscar por nombre..."
-                [(ngModel)]="filters.nombre"
-                (input)="onFilterChange()"
-                >
-            </div>
-            <div class="col-md-3">
-                <input 
-                type="text" 
-                class="form-control" 
-                placeholder="Documento de identidad..."
-                [(ngModel)]="filters.documento"
-                (input)="onFilterChange()"
-                >
-            </div>
-            <div class="col-md-2">
-                <select 
-                class="form-control" 
-                [(ngModel)]="filters.activo"
-                (change)="onFilterChange()"
-                >
-                <option value="">Todos los estados</option>
-                <option value="true">Activos</option>
-                <option value="false">Inactivos</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-secondary" (click)="clearFilters()">
-                Limpiar
+      <!-- Tabla de pacientes -->
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Fecha nacimiento</th>
+              <th>Activo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="8" class="text-center">Cargando...</td>
+            </tr>
+
+            <tr *ngIf="!loading && pacientes.length === 0">
+              <td colspan="8" class="text-center">No hay pacientes registrados</td>
+            </tr>
+
+            <tr *ngFor="let p of pacientes">
+              <td>{{ p.id }}</td>
+              <td>{{ p.nombre }}</td>
+              <td>{{ p.apellido }}</td>
+              <td>{{ p.email }}</td>
+              <td>{{ p.telefono || '-' }}</td>
+              <td>{{ p.fecha_nacimiento }}</td>
+
+              <td>
+                <span class="badge"
+                  [class.badge-success]="p.activo"
+                  [class.badge-danger]="!p.activo">
+                  {{ p.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="editPaciente(p)">
+                  Editar
                 </button>
-            </div>
-            </div>
-        </div>
+                <button class="btn btn-sm btn-danger" (click)="deletePaciente(p)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        <!-- Tabla de pacientes -->
-        <div class="table-responsive">
-            <table class="table">
-            <thead>
-                <tr>
-                <th>ID</th>
-                <th>Nombre Completo</th>
-                <th>Documento</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-                <th>Estado</th>
-                <th>Fecha Registro</th>
-                <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngIf="loading">
-                <td colspan="8" class="text-center">Cargando pacientes...</td>
-                </tr>
-                <tr *ngIf="!loading && pacientes.length === 0">
-                <td colspan="8" class="text-center">No hay pacientes registrados</td>
-                </tr>
-                <tr *ngFor="let paciente of pacientes">
-                <td>{{ paciente.id | uuid }}</td>
-                <td>{{ paciente.nombre }} {{ paciente.apellido }}</td>
-                <td>{{ paciente.documento }}</td>
-                <td>{{ paciente.telefono || '-' }}</td>
-                <td>{{ paciente.email || '-' }}</td>
-                <td>
-                    <span class="badge" [class.badge-success]="paciente.activo" [class.badge-danger]="!paciente.activo">
-                    {{ paciente.activo ? 'Activo' : 'Inactivo' }}
-                    </span>
-                </td>
-                <td>{{ paciente.fecha_creacion | date:'short' }}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary" (click)="editPaciente(paciente)">
-                    Editar
-                    </button>
-                    <button class="btn btn-sm btn-danger" (click)="deletePaciente(paciente)">
-                    Eliminar
-                    </button>
-                </td>
-                </tr>
-            </tbody>
-            </table>
-        </div>
+      <!-- Paginación -->
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)">
+          Anterior
+        </button>
 
-        <!-- Paginación -->
-        <div class="pagination mt-3" *ngIf="totalPages > 1">
-            <button 
-            class="btn btn-secondary" 
-            [disabled]="currentPage === 1"
-            (click)="goToPage(currentPage - 1)"
-            >
-            Anterior
-            </button>
-            <span class="mx-3">
-            Página {{ currentPage }} de {{ totalPages }}
-            </span>
-            <button 
-            class="btn btn-secondary" 
-            [disabled]="currentPage === totalPages"
-            (click)="goToPage(currentPage + 1)"
-            >
-            Siguiente
-            </button>
-        </div>
-        </div>
+        <span class="mx-3">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)">
+          Siguiente
+        </button>
+      </div>
     </div>
+  </div>
 
-    <!-- Modal para crear/editar paciente -->
-    <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-            <h5 class="modal-title">{{ editingPaciente ? 'Editar Paciente' : 'Nuevo Paciente' }}</h5>
-            <button type="button" class="close" (click)="closeModal()">
-                <span>&times;</span>
-            </button>
-            </div>
-            <div class="modal-body">
-            <form (ngSubmit)="savePaciente()">
-                <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                    <label for="nombre">Nombre *</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="nombre" 
-                        [(ngModel)]="pacienteForm.nombre" 
-                        name="nombre"
-                        required
-                        placeholder="Ej: Juan"
-                    >
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                    <label for="apellido">Apellido *</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="apellido" 
-                        [(ngModel)]="pacienteForm.apellido" 
-                        name="apellido"
-                        required
-                        placeholder="Ej: Pérez"
-                    >
-                    </div>
-                </div>
-                </div>
+  <!-- Modal Pacientes -->
+  <div class="modal fade" 
+       [class.show]="showModal"
+       [style.display]="showModal ? 'block' : 'none'"
+       tabindex="-1" role="dialog">
 
-                <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                    <label for="documento">Documento *</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="documento" 
-                        [(ngModel)]="pacienteForm.documento" 
-                        name="documento"
-                        required
-                        placeholder="Cédula o pasaporte"
-                    >
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                    <label for="telefono">Teléfono</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="telefono" 
-                        [(ngModel)]="pacienteForm.telefono" 
-                        name="telefono"
-                        placeholder="Opcional"
-                    >
-                    </div>
-                </div>
-                </div>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
 
+        <div class="modal-header">
+          <h5 class="modal-title">
+            {{ editingPaciente ? 'Editar Paciente' : 'Nuevo Paciente' }}
+          </h5>
+          <button type="button" class="close" (click)="closeModal()">
+            <span>&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form>
+            <div class="row">
+              <div class="col-md-6">
                 <div class="form-group">
-                <label for="email">Email</label>
-                <input 
-                    type="email" 
-                    class="form-control" 
-                    id="email" 
-                    [(ngModel)]="pacienteForm.email" 
-                    name="email"
-                    placeholder="Opcional"
-                >
+                  <label>Nombre *</label>
+                  <input type="text"
+                    class="form-control"
+                    [(ngModel)]="pacienteForm.nombre"
+                    name="nombre"
+                    required>
                 </div>
+              </div>
 
+              <div class="col-md-6">
                 <div class="form-group">
-                <div class="form-check">
-                    <input 
-                    type="checkbox" 
-                    class="form-check-input" 
-                    id="activo" 
-                    [(ngModel)]="pacienteForm.activo" 
-                    name="activo"
-                    >
-                    <label class="form-check-label" for="activo">
-                    Paciente activo
-                    </label>
+                  <label>Apellido *</label>
+                  <input type="text"
+                    class="form-control"
+                    [(ngModel)]="pacienteForm.apellido"
+                    name="apellido"
+                    required>
                 </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Email *</label>
+              <input type="email"
+                class="form-control"
+                [(ngModel)]="pacienteForm.email"
+                name="email"
+                required>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Teléfono</label>
+                  <input type="text"
+                    class="form-control"
+                    [(ngModel)]="pacienteForm.telefono"
+                    name="telefono">
                 </div>
-            </form>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Fecha de nacimiento *</label>
+                  <input type="date"
+                    class="form-control"
+                    [(ngModel)]="pacienteForm.fecha_nacimiento"
+                    name="fecha_nacimiento"
+                    required>
+                </div>
+              </div>
             </div>
-            <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
-            <button type="button" class="btn btn-primary" (click)="savePaciente()">
-                {{ editingPaciente ? 'Actualizar' : 'Crear' }}
-            </button>
+
+            <div class="form-group">
+              <label>Dirección</label>
+              <input type="text"
+                class="form-control"
+                [(ngModel)]="pacienteForm.direccion"
+                name="direccion">
             </div>
+
+            <div class="form-check">
+              <input type="checkbox"
+                class="form-check-input"
+                id="activo"
+                [(ngModel)]="pacienteForm.activo"
+                name="activo">
+              <label class="form-check-label" for="activo">
+                Paciente activo
+              </label>
+            </div>
+
+          </form>
         </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button class="btn btn-primary" (click)="savePaciente()">
+            {{ editingPaciente ? 'Actualizar' : 'Crear' }}
+          </button>
         </div>
+
+      </div>
     </div>
-    </div>
-    
+  </div>
 </div>

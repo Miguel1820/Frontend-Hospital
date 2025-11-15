@@ -2,34 +2,40 @@
  * Modelo para la entidad Usuario
  */
 export interface Usuario {
-  id: number;
-  email: string;
+  id: string; // UUID
   nombre: string;
-  apellido: string;
+  nombre_usuario: string;
+  email: string;
+  telefono?: string;
   activo: boolean;
+  es_admin: boolean;
   fecha_creacion: string;
-  fecha_actualizacion: string;
-  ultimo_acceso?: string;
+  fecha_edicion?: string;
 }
 
 /**
  * Modelo para crear un nuevo usuario
  */
 export interface CreateUsuarioRequest {
-  email: string;
-  password: string;
   nombre: string;
-  apellido: string;
-  activo?: boolean;
+  nombre_usuario: string;
+  email: string;
+  contraseña: string;
+  telefono?: string;
+  es_admin?: boolean;
+  password: string; // Alias for contraseña for frontend compatibility
+  apellido: string; // Additional field for frontend
 }
 
 /**
  * Modelo para actualizar un usuario
  */
 export interface UpdateUsuarioRequest {
-  email?: string;
   nombre?: string;
-  apellido?: string;
+  nombre_usuario?: string;
+  email?: string;
+  telefono?: string;
+  es_admin?: boolean;
   activo?: boolean;
 }
 
@@ -37,8 +43,8 @@ export interface UpdateUsuarioRequest {
  * Modelo para cambiar contraseña
  */
 export interface ChangePasswordRequest {
-  current_password: string;
-  new_password: string;
+  contraseña_actual: string;
+  nueva_contraseña: string;
 }
 
 /**
@@ -47,8 +53,7 @@ export interface ChangePasswordRequest {
 export interface UsuarioFilters {
   email?: string;
   nombre?: string;
-  apellido?: string;
+  nombre_usuario?: string;
   activo?: boolean;
-  fecha_desde?: string;
-  fecha_hasta?: string;
+  es_admin?: boolean;
 }

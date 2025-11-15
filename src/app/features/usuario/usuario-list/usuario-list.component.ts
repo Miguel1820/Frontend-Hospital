@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PaginationParams } from '../../../core/models/api-response.model';
 import { UsuarioService } from '../../../core/services/usuario.service';
-import { Usuario, UsuarioFilters } from '../../../shared/models/usuario.model';
+import { CreateUsuarioRequest, UpdateUsuarioRequest, Usuario, UsuarioFilters } from '../../../shared/models/usuario.model';
 
 @Component({
   selector: 'app-usuario-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './usuario-list.component.html',
   styleUrl: './usuario-list.component.scss'
 })
@@ -24,30 +24,24 @@ export class UsuarioListComponent implements OnInit {
   // Modal properties
   showModal = false;
   editingUsuario: Usuario | null = null;
-  usuarioForm = {
-    email: '',
-    nombre: '',
-    apellido: '',
-    password: '',
-    activo: true
-  };
+  usuarioForm: FormGroup;
 
-  constructor(private usuarioService: UsuarioService) { }
+  constructor(
+    private usuarioService: UsuarioService,
+    private fb: FormBuilder
+  ) {
+    this.usuarioForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.minLength(2)]],
+      nombre_usuario: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      telefono: [''],
+      contraseña: [''],
+      es_admin: [false]
+    });
+  }
 
   ngOnInit(): void {
-    // Agregar un dato dummy para pruebas
-    this.usuarios = [{
-      id: 1,
-      email: 'admin@example.com',
-      nombre: 'Administrador',
-      apellido: 'Sistema',
-      activo: true,
-      ultimo_acceso: new Date().toISOString(),
-      fecha_creacion: new Date().toISOString(),
-      fecha_actualizacion: new Date().toISOString()
-    }];
-    this.totalPages = 1;
-    // this.loadUsuarios();
+    this.loadUsuarios();
   }
 
   loadUsuarios(): void {
@@ -58,13 +52,28 @@ export class UsuarioListComponent implements OnInit {
     };
 
     this.usuarioService.getUsuarios(pagination, this.filters).subscribe({
-      next: (response) => {
-        this.usuarios = response.data;
-        this.totalPages = response.totalPages;
+      next: (usuarios) => {
+        this.usuarios = usuarios;
         this.loading = false;
       },
       error: (error) => {
         console.error('Error al cargar usuarios:', error);
+        // Si el backend no está disponible, usar datos mock
+        if (error.status === 0 || error.status === undefined) {
+          console.log('Backend no disponible, usando datos mock para usuarios');
+          this.usuarios = [{
+            id: '1',
+            nombre: 'Administrador',
+            nombre_usuario: 'admin',
+            email: 'admin@itm.edu.co',
+            telefono: '',
+            activo: true,
+            es_admin: true,
+            fecha_creacion: new Date().toISOString(),
+            fecha_edicion: new Date().toISOString()
+          }];
+          this.totalPages = 1;
+        }
         this.loading = false;
       }
     });
@@ -90,64 +99,58 @@ export class UsuarioListComponent implements OnInit {
 
   openCreateModal(): void {
     this.editingUsuario = null;
-    this.usuarioForm = {
-      email: '',
+    this.usuarioForm.reset({
       nombre: '',
-      apellido: '',
-      password: '',
-      activo: true
-    };
+      nombre_usuario: '',
+      email: '',
+      telefono: '',
+      contraseña: '',
+      es_admin: false
+    });
     this.showModal = true;
   }
 
   editUsuario(usuario: Usuario): void {
     this.editingUsuario = usuario;
-    this.usuarioForm = {
-      email: usuario.email,
+    this.usuarioForm.patchValue({
       nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      password: '',
-      activo: usuario.activo
-    };
+      nombre_usuario: usuario.nombre_usuario,
+      email: usuario.email,
+      telefono: usuario.telefono || '',
+      contraseña: '',
+      es_admin: usuario.es_admin
+    });
     this.showModal = true;
   }
 
   closeModal(): void {
     this.showModal = false;
     this.editingUsuario = null;
-    this.usuarioForm = {
-      email: '',
-      nombre: '',
-      apellido: '',
-      password: '',
-      activo: true
-    };
+    this.usuarioForm.reset();
   }
 
   saveUsuario(): void {
-    if (!this.usuarioForm.email.trim() || !this.usuarioForm.nombre.trim() || !this.usuarioForm.apellido.trim()) {
-      alert('Email, nombre y apellido son requeridos');
+    if (this.usuarioForm.invalid) {
+      this.usuarioForm.markAllAsTouched();
       return;
     }
 
-    if (!this.editingUsuario && !this.usuarioForm.password.trim()) {
+    if (!this.editingUsuario && !this.usuarioForm.get('contraseña')?.value) {
       alert('La contraseña es requerida para nuevos usuarios');
       return;
     }
 
+    const formValue = this.usuarioForm.value;
+
     if (this.editingUsuario) {
       // Actualizar usuario existente
-      const updateData: any = {
-        email: this.usuarioForm.email,
-        nombre: this.usuarioForm.nombre,
-        apellido: this.usuarioForm.apellido,
-        activo: this.usuarioForm.activo
+      const updateData: UpdateUsuarioRequest = {
+        nombre: formValue.nombre,
+        nombre_usuario: formValue.nombre_usuario,
+        email: formValue.email,
+        telefono: formValue.telefono,
+        es_admin: formValue.es_admin
       };
-      
-      // Solo incluir password si se proporcionó
-      if (this.usuarioForm.password.trim()) {
-        updateData.password = this.usuarioForm.password;
-      }
       
       this.usuarioService.updateUsuario(this.editingUsuario.id, updateData).subscribe({
         next: () => {
@@ -161,12 +164,15 @@ export class UsuarioListComponent implements OnInit {
       });
     } else {
       // Crear nuevo usuario
-      const newUsuario = {
-        email: this.usuarioForm.email,
-        nombre: this.usuarioForm.nombre,
-        apellido: this.usuarioForm.apellido,
-        password: this.usuarioForm.password,
-        activo: this.usuarioForm.activo
+      const newUsuario: CreateUsuarioRequest = {
+        nombre: formValue.nombre,
+        nombre_usuario: formValue.nombre_usuario,
+        email: formValue.email,
+        telefono: formValue.telefono,
+        contraseña: formValue.contraseña,
+        password: formValue.contraseña, // Alias for frontend compatibility
+        apellido: formValue.apellido || '', // Add missing field
+        es_admin: formValue.es_admin
       };
       
       this.usuarioService.createUsuario(newUsuario).subscribe({
@@ -190,6 +196,21 @@ export class UsuarioListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al eliminar usuario:', error);
+          alert('Error al eliminar el usuario');
+        }
+      });
+    }
+  }
+
+  desactivarUsuario(usuario: Usuario): void {
+    if (confirm(`¿Está seguro de desactivar el usuario "${usuario.email}"?`)) {
+      this.usuarioService.desactivarUsuario(usuario.id).subscribe({
+        next: () => {
+          this.loadUsuarios();
+        },
+        error: (error) => {
+          console.error('Error al desactivar usuario:', error);
+          alert('Error al desactivar el usuario');
         }
       });
     }

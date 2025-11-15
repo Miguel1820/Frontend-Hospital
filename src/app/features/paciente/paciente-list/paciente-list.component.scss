@@ -1,53 +1,7 @@
-.paciente-list {
-  padding: 1.5rem;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-}
-
-.card-header {
-  background: linear-gradient(135deg, #0f9b0f, #0d8a0d);
-  color: white;
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.card-body {
-  padding: 1.5rem;
-}
-
-.filters .form-control {
-  font-size: 0.95rem;
-}
-
-.table {
-  margin-bottom: 0;
-  font-size: 0.95rem;
-}
-
-.table th {
-  font-weight: 600;
-  color: #2c3e50;
-  border-top: none;
-}
-
-.badge {
-  padding: 0.25rem 0.6rem;
-  border-radius: 1rem;
+.badge { 
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
   font-size: 0.75rem;
-  font-weight: 500;
 }
 
 .badge-success {
@@ -60,43 +14,55 @@
   color: white;
 }
 
+.table-responsive {
+  overflow-x: auto;
+}
+
 .pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  display: none;
+}
+
+.modal.show {
+  display: block !important;
+}
+
+.modal-dialog {
+  position: relative;
+  max-width: 800px;
+  margin: 1.75rem auto;
+  transform: translateY(-50%);
+  top: 50%;
 }
 
 .modal-content {
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 0.5rem;
+  background-color: white;
 }
 
 .modal-header {
-  background: #0f9b0f;
-  color: white;
-  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
 }
 
-.modal-title {
-  font-weight: 600;
+.modal-body {
+  padding: 1.5rem;
 }
 
-.close {
-  color: white;
-  opacity: 0.8;
-}
-
-.close:hover {
-  opacity: 1;
-}
-
-.form-group label {
-  font-weight: 500;
-  color: #2c3e50;
-}
-
-.form-control:focus {
-  border-color: #0f9b0f;
-  box-shadow: 0 0 0 0.2rem rgba(15, 155, 15, 0.25);
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
 }

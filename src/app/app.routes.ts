@@ -22,7 +22,8 @@ export const routes: Routes = [
     loadComponent: () => import('./features/usuario/usuario-list/usuario-list.component').then(m => m.UsuarioListComponent),
     canActivate: [AuthGuard]
   },
- /*
+
+/*
   {
     path: 'citas',
     loadComponent: () => import('./features/cita/cita-list/cita-list.component').then(m => m.CitaListComponent),
@@ -69,16 +70,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
 */
-  {
-    path: 'categorias',
-    loadComponent: () => import('./features/categoria/categoria-list/categoria-list.component').then(m => m.CategoriaListComponent),
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'productos',
-    loadComponent: () => import('./features/producto/producto-list/producto-list.component').then(m => m.ProductoListComponent),
-    canActivate: [AuthGuard]
-  },
+
   {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes)

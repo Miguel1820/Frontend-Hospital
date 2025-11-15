@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
-import { ApiService } from './api.service';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { Paciente } from '../../shared/models/paciente.model';
 
 @Injectable({
@@ -8,27 +8,28 @@ import { Paciente } from '../../shared/models/paciente.model';
 })
 export class PacienteService {
 
-  private readonly endpoint = '/pacientes'; 
+  private readonly baseUrl = 'http://localhost:8000/api';
+  private readonly endpoint = '/pacientes';
 
-  constructor(private apiService: ApiService) { }
+  constructor(private http: HttpClient) {}
 
-  getPacientes(): Observable<Paciente[]> {
-    return this.apiService.get<Paciente[]>(this.endpoint);
+  getAll(): Observable<Paciente[]> {
+    return this.http.get<Paciente[]>(`${this.baseUrl}${this.endpoint}`);
   }
 
-  getPacienteById(id: string): Observable<Paciente> {
-    return this.apiService.get<Paciente>(`${this.endpoint}/${id}`);
-    }
+  getById(id: string): Observable<Paciente> {
+    return this.http.get<Paciente>(`${this.baseUrl}${this.endpoint}/${id}`);
+  }
 
-  createPaciente(data: any): Observable<Paciente> {
-    return this.apiService.post<Paciente>(this.endpoint, data);
-    }
+  create(paciente: Partial<Paciente>): Observable<Paciente> {
+    return this.http.post<Paciente>(`${this.baseUrl}${this.endpoint}`, paciente);
+  }
 
-  updatePaciente(id: string, data: any): Observable<Paciente> {
-    return this.apiService.put<Paciente>(`${this.endpoint}/${id}`, data);
-    }
+  update(id: string, paciente: Partial<Paciente>): Observable<Paciente> {
+    return this.http.put<Paciente>(`${this.baseUrl}${this.endpoint}/${id}`, paciente);
+  }
 
-  deletePaciente(id: string): Observable<void> {
-    return this.apiService.delete<void>(`${this.endpoint}/${id}`);
-    }
+  delete(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}${this.endpoint}/${id}`);
+  }
 }

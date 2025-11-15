@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 
 @Component({
@@ -8,12 +8,13 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterModule, SidebarComponent],
   template: `
-    <div class="wrapper">
+    <div class="wrapper" *ngIf="!isAuthRoute(); else authLayout">
+    
       <div class="sidebar" data-color="red">
         <app-sidebar></app-sidebar>
       </div>
-      <div class="main-panel">
 
+      <div class="main-panel">
         <button 
           class="hamburger-btn d-lg-none"
           (click)="toggleSidebar()">
@@ -24,7 +25,13 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
           <router-outlet></router-outlet>
         </div>
       </div>
+
     </div>
+
+    <ng-template #authLayout>
+      <!-- LOGIN SIN SIDEBAR -->
+      <router-outlet></router-outlet>
+    </ng-template>
   `,
   styles: [`
     /* ---------- WRAPPER GENERAL ---------- */
@@ -123,16 +130,18 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
   `]
 })
 export class AppComponent {
-  title = 'frontend-angular-clean-architecture';
+ 
+  private router = inject(Router);
 
-  /** Controla si el sidebar está visible en móvil */
   sidebarOpen = false;
 
-
-  /** Alterna el estado del sidebar (abrir/cerrar) */
   toggleSidebar() {
     this.sidebarOpen = !this.sidebarOpen;
-    console.log('Sidebar:', this.sidebarOpen ? 'ABIERTO' : 'CERRADO'); // ← PARA DEBUG
+  }
+
+  /** Detecta si la ruta actual es /auth/... */
+  isAuthRoute(): boolean {
+    return this.router.url.startsWith('/auth');
   }
   
 }

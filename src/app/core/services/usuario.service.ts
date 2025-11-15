@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ChangePasswordRequest, CreateUsuarioRequest, UpdateUsuarioRequest, Usuario, UsuarioFilters } from '../../shared/models/usuario.model';
-import { ApiResponse, PaginatedResponse, PaginationParams } from '../models/api-response.model';
+import { PaginationParams } from '../models/api-response.model';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -15,56 +15,78 @@ export class UsuarioService {
   /**
    * Obtiene todos los usuarios con paginación
    */
-  getUsuarios(pagination: PaginationParams, filters?: UsuarioFilters): Observable<PaginatedResponse<Usuario>> {
-    return this.apiService.getPaginated<Usuario>(this.endpoint, pagination, filters);
+  getUsuarios(pagination: PaginationParams, filters?: UsuarioFilters): Observable<any> {
+    const params = { ...pagination, ...filters };
+    return this.apiService.getPaginated<any>(this.endpoint, params);
   }
-
+  
   /**
    * Obtiene un usuario por ID
    */
-  getUsuarioById(id: number): Observable<ApiResponse<Usuario>> {
+  getUsuarioById(id: string): Observable<Usuario> {
     return this.apiService.get<Usuario>(`${this.endpoint}/${id}`);
+  }
+
+  /**
+   * Obtiene un usuario por email
+   */
+  getUsuarioByEmail(email: string): Observable<Usuario> {
+    return this.apiService.get<Usuario>(`${this.endpoint}/email/${email}`);
+  }
+
+  /**
+   * Obtiene un usuario por nombre de usuario
+   */
+  getUsuarioByUsername(username: string): Observable<Usuario> {
+    return this.apiService.get<Usuario>(`${this.endpoint}/username/${username}`);
   }
 
   /**
    * Crea un nuevo usuario
    */
-  createUsuario(usuario: CreateUsuarioRequest): Observable<ApiResponse<Usuario>> {
+  createUsuario(usuario: CreateUsuarioRequest): Observable<Usuario> {
     return this.apiService.post<Usuario>(this.endpoint, usuario);
   }
 
   /**
    * Actualiza un usuario existente
    */
-  updateUsuario(id: number, usuario: UpdateUsuarioRequest): Observable<ApiResponse<Usuario>> {
+  updateUsuario(id: string, usuario: UpdateUsuarioRequest): Observable<Usuario> {
     return this.apiService.put<Usuario>(`${this.endpoint}/${id}`, usuario);
   }
 
   /**
    * Elimina un usuario
    */
-  deleteUsuario(id: number): Observable<ApiResponse<void>> {
-    return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+  deleteUsuario(id: string): Observable<any> {
+    return this.apiService.delete<any>(`${this.endpoint}/${id}`);
+  }
+
+  /**
+   * Desactiva un usuario (soft delete)
+   */
+  desactivarUsuario(id: string): Observable<Usuario> {
+    return this.apiService.patch<Usuario>(`${this.endpoint}/${id}/desactivar`, {});
   }
 
   /**
    * Cambia la contraseña de un usuario
    */
-  changePassword(id: number, passwordData: ChangePasswordRequest): Observable<ApiResponse<void>> {
-    return this.apiService.post<void>(`${this.endpoint}/${id}/change-password`, passwordData);
+  changePassword(id: string, passwordData: ChangePasswordRequest): Observable<any> {
+    return this.apiService.post<any>(`${this.endpoint}/${id}/cambiar-contraseña`, passwordData);
   }
 
   /**
-   * Obtiene todos los usuarios activos (sin paginación)
+   * Obtiene todos los usuarios administradores
    */
-  getUsuariosActivos(): Observable<ApiResponse<Usuario[]>> {
-    return this.apiService.get<Usuario[]>(`${this.endpoint}/activos`);
+  getUsuariosAdmin(): Observable<Usuario[]> {
+    return this.apiService.get<Usuario[]>(`${this.endpoint}/admin/lista`);
   }
 
   /**
-   * Activa/desactiva un usuario
+   * Verifica si un usuario es administrador
    */
-  toggleUsuarioStatus(id: number, activo: boolean): Observable<ApiResponse<Usuario>> {
-    return this.apiService.patch<Usuario>(`${this.endpoint}/${id}/toggle-status`, { activo });
+  verificarEsAdmin(id: string): Observable<any> {
+    return this.apiService.get<any>(`${this.endpoint}/${id}/es-admin`);
   }
 }
