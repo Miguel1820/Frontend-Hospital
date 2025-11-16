@@ -1,0 +1,58 @@
+<div class="factura-detalle-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Detalles de Factura</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nuevo Detalle</button>
+    </div>
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar por factura..." [(ngModel)]="filters.factura" (input)="onFilterChange()">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Factura</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Total</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading"><td colspan="7" class="text-center">Cargando...</td></tr>
+            <tr *ngIf="!loading && detalles.length === 0"><td colspan="7" class="text-center">No hay detalles disponibles</td></tr>
+            <tr *ngFor="let detalle of detalles">
+              <td>{{ detalle.id }}</td>
+              <td>{{ detalle.factura }}</td>
+              <td>{{ detalle.producto }}</td>
+              <td>{{ detalle.cantidad }}</td>
+              <td>{{ detalle.precio_unitario | currency }}</td>
+              <td>{{ detalle.total | currency }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-1" (click)="editDetalle(detalle)">Editar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteDetalle(detalle)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Siguiente</button>
+      </div>
+    </div>
+  </div>
+</div>

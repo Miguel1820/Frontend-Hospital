@@ -22,8 +22,6 @@ export const routes: Routes = [
     loadComponent: () => import('./features/usuario/usuario-list/usuario-list.component').then(m => m.UsuarioListComponent),
     canActivate: [AuthGuard]
   },
-
-/*
   {
     path: 'citas',
     loadComponent: () => import('./features/cita/cita-list/cita-list.component').then(m => m.CitaListComponent),
@@ -46,17 +44,17 @@ export const routes: Routes = [
   },
   {
     path: 'detalle_factura',
-    loadComponent: () => import('./features/factura/detalle_factura-list/detalle_factura-list.component').then(m => m.DetalleFacturaListComponent),
+    loadComponent: () => import('./features/factura_detalle/factura_detalle-list/detalle_factura-list.component').then(m => m.FacturaDetalleListComponent),
     canActivate: [AuthGuard]
   },
   {
     path: 'historial_entrada',
-    loadComponent: () => import('./features/historial/historial_entrada-list/historial_entrada-list.component').then(m => m.HistorialEntradaListComponent),
+    loadComponent: () => import('./features/historial_entrada/historial_entrada-list/historial_entrada-list.component').then(m => m.HistorialEntradaListComponent),
     canActivate: [AuthGuard]
   },
   {
     path: 'historial_medico',
-    loadComponent: () => import('./features/historial/historial_medico-list/historial_medico-list.component').then(m => m.HistorialMedicoListComponent),
+    loadComponent: () => import('./features/historial_medico/historial_medico-list/historial_medico-list.component').then(m => m.HistorialMedicoListComponent),
     canActivate: [AuthGuard]
   },
   {
@@ -64,12 +62,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/hospitalizacion/hospitalizacion-list/hospitalizacion-list.component').then(m => m.HospitalizacionListComponent),
     canActivate: [AuthGuard]
   },
+
+  /*
   {
     path: 'configuracion',
     loadComponent: () => import('./features/configuracion/configuracion.component').then(m => m.ConfiguracionComponent),
     canActivate: [AuthGuard]
   },
-*/
+  */
 
   {
     path: 'auth',

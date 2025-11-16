@@ -13,7 +13,12 @@ export class ApiService {
 
   // 🔥 ARREGLA AUTOMÁTICAMENTE DOBLES SLASHES "//"
   private buildUrl(endpoint: string): string {
-    return `${this.baseUrl}/${endpoint}`.replace(/\/+/g, '/');
+    // Asegurarse de no romper el esquema "http://" al normalizar barras.
+    // Normalizar quitando barras finales del baseUrl y barras iniciales del endpoint,
+    // luego concatenar con una única barra.
+    const base = this.baseUrl.replace(/\/+$/g, '');
+    const ep = endpoint.replace(/^\/+/, '');
+    return `${base}/${ep}`;
   }
 
   get<T>(endpoint: string, params?: any): Observable<T> {

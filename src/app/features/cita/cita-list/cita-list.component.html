@@ -1,0 +1,62 @@
+<div class="cita-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Citas</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nueva Cita</button>
+    </div>
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar por paciente..." [(ngModel)]="filters.paciente" (input)="onFilterChange()">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Paciente</th>
+              <th>Médico</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading"><td colspan="7" class="text-center">Cargando...</td></tr>
+            <tr *ngIf="!loading && citas.length === 0"><td colspan="7" class="text-center">No hay citas disponibles</td></tr>
+            <tr *ngFor="let cita of citas">
+              <td>{{ cita.id }}</td>
+              <td>{{ cita.paciente }}</td>
+              <td>{{ cita.medico }}</td>
+              <td>{{ cita.fecha | date:'shortDate' }}</td>
+              <td>{{ cita.hora }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="cita.activo" [class.badge-danger]="!cita.activo">
+                  {{ cita.activo ? 'Activo' : 'Cancelado' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary me-1" (click)="editCita(cita)">Editar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteCita(cita)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Siguiente</button>
+      </div>
+    </div>
+  </div>
+</div>

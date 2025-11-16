@@ -1,0 +1,102 @@
+<div class="hospitalizacion-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Hospitalizaciones</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nueva Hospitalización</button>
+    </div>
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar por paciente..." [(ngModel)]="filters.paciente" (input)="onFilterChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar por médico..." [(ngModel)]="filters.medico" (input)="onFilterChange()">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Paciente</th>
+              <th>Médico</th>
+              <th>Fecha ingreso</th>
+              <th>Fecha salida</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading"><td colspan="7" class="text-center">Cargando...</td></tr>
+            <tr *ngIf="!loading && hospitalizaciones.length === 0"><td colspan="7" class="text-center">No hay hospitalizaciones disponibles</td></tr>
+            <tr *ngFor="let item of hospitalizaciones">
+              <td>{{ item.id }}</td>
+              <td>{{ item.paciente }}</td>
+              <td>{{ item.medico }}</td>
+              <td>{{ item.fecha_ingreso | date:'short' }}</td>
+              <td>{{ item.fecha_salida ? (item.fecha_salida | date:'short') : '-' }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="item.activo" [class.badge-danger]="!item.activo">
+                  {{ item.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary me-1" (click)="editHospitalizacion(item)">Editar</button>
+                <button class="btn btn-sm btn-warning me-1" (click)="desactivarHospitalizacion(item)" *ngIf="item.activo">Desactivar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteHospitalizacion(item)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingHospitalizacion ? 'Editar Hospitalización' : 'Nueva Hospitalización' }}</h5>
+          <button type="button" class="close" (click)="closeModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="hospitalizacionForm" (ngSubmit)="saveHospitalizacion()">
+            <div class="form-group mb-3">
+              <label for="paciente">Paciente *</label>
+              <input type="text" class="form-control" id="paciente" formControlName="paciente">
+            </div>
+            <div class="form-group mb-3">
+              <label for="medico">Médico *</label>
+              <input type="text" class="form-control" id="medico" formControlName="medico">
+            </div>
+            <div class="form-group mb-3">
+              <label for="fecha_ingreso">Fecha Ingreso *</label>
+              <input type="date" class="form-control" id="fecha_ingreso" formControlName="fecha_ingreso">
+            </div>
+            <div class="form-group mb-3">
+              <label for="fecha_salida">Fecha Salida</label>
+              <input type="date" class="form-control" id="fecha_salida" formControlName="fecha_salida">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button class="btn btn-primary" (click)="saveHospitalizacion()">{{ editingHospitalizacion ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

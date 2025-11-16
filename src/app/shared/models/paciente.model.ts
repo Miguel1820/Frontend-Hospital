@@ -1,57 +1,48 @@
-/**
- * Modelo para la entidad Paciente
- */
 export interface Paciente {
-  id: number;
+  id: string;  // UUID
   primer_nombre: string;
-  segundo_nombre: string;
+  segundo_nombre?: string;
   apellido: string;
+  // backward-compatible aliases used in templates
+  nombre?: string;
+  fecha_creacion?: string;
   email: string;
-  telefono: string;
-  fecha_nacimiento: string;
-  direccion: string;
+  telefono?: string;
+  fecha_nacimiento: string; // ISO string
+  direccion?: string;
   activo: boolean;
-  id_usuario_creacion: number;
+  created_at: string;
+  updated_at?: string;
 }
 
-/**
- * Modelo para crear un nuevo paciente
- */
 export interface CreatePacienteRequest {
-  id: number;
   primer_nombre: string;
-  segundo_nombre: string;
+  segundo_nombre?: string;
   apellido: string;
   email: string;
-  telefono: string;
+  telefono?: string;
   fecha_nacimiento: string;
-  direccion: string;
-  activo: boolean;
-  id_usuario_creacion: number;
+  direccion?: string;
+  id_usuario_creacion: string; // UUID
 }
 
-/**
- * Modelo para actualizar un paciente
- */
 export interface UpdatePacienteRequest {
-  id: number;
-  primer_nombre: string;
-  segundo_nombre: string;
-  apellido: string;
-  email: string;
-  telefono: string;
-  fecha_nacimiento: string;
-  direccion: string;
-  activo: boolean;
-  id_usuario_creacion: number;
+  primer_nombre?: string;
+  segundo_nombre?: string;
+  apellido?: string;
+  email?: string;
+  telefono?: string;
+  fecha_nacimiento?: string;
+  direccion?: string;
+  activo?: boolean;
+  id_usuario_edicion: string; // UUID
 }
 
-/**
- * Modelo para filtros de pacientes
- */
 export interface PacienteFilters {
-  primer_nombre: string;
-  apellido: string;
-  email: string;
-  activo: string;
+  primer_nombre?: string;
+  apellido?: string;
+  email?: string;
+  activo?: boolean;
+  // alias used by templates
+  nombre?: string;
 }

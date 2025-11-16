@@ -1,0 +1,107 @@
+<div class="medico-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Médicos</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nuevo Médico</button>
+    </div>
+    <div class="card-body">
+      <!-- Filtros -->
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar por nombre..." [(ngModel)]="filters.nombre" (input)="onFilterChange()">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar por especialidad..." [(ngModel)]="filters.especialidad" (input)="onFilterChange()">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de médicos -->
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Especialidad</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Estado</th>
+              <th>Fecha Creación</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading"><td colspan="8" class="text-center">Cargando...</td></tr>
+            <tr *ngIf="!loading && medicos.length === 0"><td colspan="8" class="text-center">No hay médicos disponibles</td></tr>
+            <tr *ngFor="let medico of medicos">
+              <td>{{ medico.id }}</td>
+              <td>{{ medico.nombre }}</td>
+              <td>{{ medico.especialidad }}</td>
+              <td>{{ medico.email }}</td>
+              <td>{{ medico.telefono || '-' }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="medico.activo" [class.badge-danger]="!medico.activo">
+                  {{ medico.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>{{ medico.fecha_creacion | date:'short' }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-1" (click)="editMedico(medico)">Editar</button>
+                <button class="btn btn-sm btn-warning me-1" (click)="desactivarMedico(medico)" *ngIf="medico.activo">Desactivar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteMedico(medico)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal crear/editar -->
+  <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingMedico ? 'Editar Médico' : 'Nuevo Médico' }}</h5>
+          <button type="button" class="close" (click)="closeModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="medicoForm" (ngSubmit)="saveMedico()">
+            <div class="form-group mb-3">
+              <label for="nombre">Nombre *</label>
+              <input type="text" class="form-control" id="nombre" formControlName="nombre">
+            </div>
+            <div class="form-group mb-3">
+              <label for="especialidad">Especialidad *</label>
+              <input type="text" class="form-control" id="especialidad" formControlName="especialidad">
+            </div>
+            <div class="form-group mb-3">
+              <label for="email">Email *</label>
+              <input type="email" class="form-control" id="email" formControlName="email">
+            </div>
+            <div class="form-group mb-3">
+              <label for="telefono">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono" formControlName="telefono">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button class="btn btn-primary" (click)="saveMedico()">{{ editingMedico ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

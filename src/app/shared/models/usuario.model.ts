@@ -1,35 +1,30 @@
-/**
- * Modelo para la entidad Usuario
- */
 export interface Usuario {
-  id: string; // UUID
+  id: string;  // UUID
   nombre: string;
   nombre_usuario: string;
   email: string;
   telefono?: string;
-  activo: boolean;
   es_admin: boolean;
-  fecha_creacion: string;
-  fecha_edicion?: string;
+  activo: boolean;
+  created_at: string;
+  // backward-compatible alias used in templates
+  fecha_creacion?: string;
+  updated_at?: string;
 }
 
-/**
- * Modelo para crear un nuevo usuario
- */
 export interface CreateUsuarioRequest {
   nombre: string;
   nombre_usuario: string;
   email: string;
-  contraseña: string;
   telefono?: string;
-  es_admin?: boolean;
-  password: string; // Alias for contraseña for frontend compatibility
-  apellido: string; // Additional field for frontend
+  es_admin: boolean;
+  contraseña: string;
+  id_usuario_creacion: string; // UUID
+  // optional aliases accepted by some components
+  password?: string;
+  apellido?: string;
 }
 
-/**
- * Modelo para actualizar un usuario
- */
 export interface UpdateUsuarioRequest {
   nombre?: string;
   nombre_usuario?: string;
@@ -37,23 +32,19 @@ export interface UpdateUsuarioRequest {
   telefono?: string;
   es_admin?: boolean;
   activo?: boolean;
+  id_usuario_edicion: string; // UUID
 }
 
-/**
- * Modelo para cambiar contraseña
- */
-export interface ChangePasswordRequest {
-  contraseña_actual: string;
-  nueva_contraseña: string;
-}
-
-/**
- * Modelo para filtros de usuarios
- */
 export interface UsuarioFilters {
-  email?: string;
   nombre?: string;
   nombre_usuario?: string;
-  activo?: boolean;
+  email?: string;
   es_admin?: boolean;
+  activo?: boolean;
+}
+
+export interface ChangePasswordRequest {
+  contraseña_actual: string;
+  contraseña_nueva: string;
+  contraseña_confirmacion: string;
 }

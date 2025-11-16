@@ -1,0 +1,60 @@
+<div class="factura-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Facturas</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nueva Factura</button>
+    </div>
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar por paciente..." [(ngModel)]="filters.paciente" (input)="onFilterChange()">
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Paciente</th>
+              <th>Fecha</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading"><td colspan="6" class="text-center">Cargando...</td></tr>
+            <tr *ngIf="!loading && facturas.length === 0"><td colspan="6" class="text-center">No hay facturas disponibles</td></tr>
+            <tr *ngFor="let factura of facturas">
+              <td>{{ factura.id }}</td>
+              <td>{{ factura.paciente }}</td>
+              <td>{{ factura.fecha | date:'short' }}</td>
+              <td>{{ factura.total | currency }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="factura.activo" [class.badge-danger]="!factura.activo">
+                  {{ factura.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary me-1" (click)="editFactura(factura)">Editar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteFactura(factura)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button class="btn btn-secondary" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button class="btn btn-secondary" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">Siguiente</button>
+      </div>
+    </div>
+  </div>
+</div>

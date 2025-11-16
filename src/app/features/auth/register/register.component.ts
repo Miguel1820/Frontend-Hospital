@@ -293,15 +293,16 @@ import { CreateUsuarioRequest } from '../../../shared/models/usuario.model';
 })
 export class RegisterComponent implements OnInit {
   registerData: CreateUsuarioRequest = {
-  nombre: '',
-  apellido: '',
-  email: '',
-  nombre_usuario: '',
-  contraseña: '',
-  password: '',
-  telefono: '',
-  es_admin: false
-};
+    nombre: '',
+    apellido: '',
+    email: '',
+    nombre_usuario: '',
+    contraseña: '',
+    password: '',
+    telefono: '',
+    es_admin: false,
+    id_usuario_creacion: '123e4567-e89b-12d3-a456-426614174000' // Placeholder UUID
+  };
   
   loading = false;
 
@@ -322,7 +323,7 @@ export class RegisterComponent implements OnInit {
     this.loading = true;
 
     // Sincronizar ambos campos
-    this.registerData.contraseña = this.registerData.password;
+    this.registerData.contraseña = this.registerData.password || this.registerData.contraseña;
 
     this.usuarioService.createUsuario(this.registerData).subscribe({
       next: (response) => {

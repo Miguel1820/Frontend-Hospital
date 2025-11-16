@@ -21,10 +21,10 @@ export const ROUTES: RouteInfo[] = [
   { path: '/enfermeras', title: 'Enfermeras', icon: 'fas fa-user-nurse', class: '', roles: ['admin', 'enfermera'] },
   { path: '/medicos', title: 'Medicos', icon: 'fas fa-user-md', class: '', roles: ['admin', 'doctor'] },
   { path: '/facturas', title: 'Facturas', icon: 'fas fa-file-invoice-dollar', class: '', roles: ['admin', 'paciente'] },
-  { path: '/factura_detalle', title: 'Detalle Factura', icon: 'fas fa-receipt', class: '', roles: ['admin', 'paciente'] },
+  { path: '/detalle_factura', title: 'Detalle Factura', icon: 'fas fa-receipt', class: '', roles: ['admin', 'paciente'] },
   { path: '/historial_entrada', title: 'Historial Entradas', icon: 'fas fa-clipboard-list', class: '', roles: ['admin', 'enfermera', 'doctor'] },
   { path: '/historial_medico', title: 'Historial Médico', icon: 'fas fa-file-medical', class: '', roles: ['admin', 'doctor', 'enfermera', 'paciente'] },
-  { path: '/hospitalizacion', title: 'Hospitalizaciones', icon: 'fas fa-procedures', class: '', roles: ['admin', 'doctor', 'enfermera'] },
+  { path: '/hospitalizaciones', title: 'Hospitalizaciones', icon: 'fas fa-procedures', class: '', roles: ['admin', 'doctor', 'enfermera'] },
 
   // Configuración final
   { path: '/configuracion', title: 'Configuración', icon: 'fas fa-cog', class: 'active active-pro', roles: ['admin', 'paciente'] }

@@ -69,8 +69,8 @@ export class UsuarioListComponent implements OnInit {
             telefono: '',
             activo: true,
             es_admin: true,
-            fecha_creacion: new Date().toISOString(),
-            fecha_edicion: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           }];
           this.totalPages = 1;
         }
@@ -149,7 +149,8 @@ export class UsuarioListComponent implements OnInit {
         nombre_usuario: formValue.nombre_usuario,
         email: formValue.email,
         telefono: formValue.telefono,
-        es_admin: formValue.es_admin
+        es_admin: formValue.es_admin,
+        id_usuario_edicion: '123e4567-e89b-12d3-a456-426614174000' // Placeholder UUID
       };
       
       this.usuarioService.updateUsuario(this.editingUsuario.id, updateData).subscribe({
@@ -170,9 +171,8 @@ export class UsuarioListComponent implements OnInit {
         email: formValue.email,
         telefono: formValue.telefono,
         contraseña: formValue.contraseña,
-        password: formValue.contraseña, // Alias for frontend compatibility
-        apellido: formValue.apellido || '', // Add missing field
-        es_admin: formValue.es_admin
+        es_admin: formValue.es_admin,
+        id_usuario_creacion: '123e4567-e89b-12d3-a456-426614174000' // Placeholder UUID
       };
       
       this.usuarioService.createUsuario(newUsuario).subscribe({

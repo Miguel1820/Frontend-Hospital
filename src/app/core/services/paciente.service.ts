@@ -1,35 +1,39 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Paciente } from '../../shared/models/paciente.model';
+import { Paciente, CreatePacienteRequest, UpdatePacienteRequest, PacienteFilters } from '../../shared/models/paciente.model';
+import { PaginationParams } from '../models/api-response.model';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PacienteService {
+  private readonly endpoint = '/api/pacientes';
 
-  private readonly baseUrl = 'http://localhost:8000/api';
-  private readonly endpoint = '/pacientes';
+  constructor(private apiService: ApiService) { }
 
-  constructor(private http: HttpClient) {}
-
-  getAll(): Observable<Paciente[]> {
-    return this.http.get<Paciente[]>(`${this.baseUrl}${this.endpoint}`);
+  getPacientes(pagination: PaginationParams, filters?: PacienteFilters): Observable<any> {
+    const params = { ...pagination, ...filters };
+    return this.apiService.getPaginated<any>(this.endpoint, params);
   }
 
-  getById(id: number): Observable<Paciente> {
-    return this.http.get<Paciente>(`${this.baseUrl}${this.endpoint}/${id}`);
+  getPacienteById(id: string): Observable<Paciente> {
+    return this.apiService.get<Paciente>(`${this.endpoint}/${id}`);
   }
 
-  create(paciente: Partial<Paciente>): Observable<Paciente> {
-    return this.http.post<Paciente>(`${this.baseUrl}${this.endpoint}`, paciente);
+  createPaciente(paciente: CreatePacienteRequest): Observable<Paciente> {
+    return this.apiService.post<Paciente>(this.endpoint, paciente);
   }
 
-  update(id: number, paciente: Partial<Paciente>): Observable<Paciente> {
-    return this.http.put<Paciente>(`${this.baseUrl}${this.endpoint}/${id}`, paciente);
+  updatePaciente(id: string, paciente: UpdatePacienteRequest): Observable<Paciente> {
+    return this.apiService.put<Paciente>(`${this.endpoint}/${id}`, paciente);
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}${this.endpoint}/${id}`);
+  deletePaciente(id: string): Observable<any> {
+    return this.apiService.delete<any>(`${this.endpoint}/${id}`);
+  }
+
+  desactivarPaciente(id: string): Observable<Paciente> {
+    return this.apiService.patch<Paciente>(`${this.endpoint}/${id}/desactivar`, {});
   }
 }
