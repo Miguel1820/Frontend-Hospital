@@ -63,12 +63,19 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "port": 4200,
+            "host": "localhost",
+            "hmr": true,
+            "liveReload": true
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend-angular-clean-architecture:build:production"
             },
             "development": {
-              "buildTarget": "frontend-angular-clean-architecture:build:development"
+              "buildTarget": "frontend-angular-clean-architecture:build:development",
+              "hmr": true
             }
           },
           "defaultConfiguration": "development"

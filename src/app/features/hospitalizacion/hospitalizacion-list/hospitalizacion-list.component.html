@@ -1,0 +1,166 @@
+<div class="hospitalizacion-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Hospitalizaciones</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nueva Hospitalización</button>
+    </div>
+    
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <select 
+              class="form-control" 
+              [(ngModel)]="filters.paciente_id"
+              (change)="onFilterChange()"
+            >
+              <option value="">Todos los pacientes</option>
+              <option *ngFor="let paciente of pacientes" [value]="paciente.id">
+                {{ paciente.nombre }} {{ paciente.apellido }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Fecha Ingreso</th>
+              <th>Fecha Salida</th>
+              <th>Paciente</th>
+              <th>Médico</th>
+              <th>Habitación</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="7" class="text-center">Cargando...</td>
+            </tr>
+            <tr *ngIf="!loading && hospitalizaciones.length === 0">
+              <td colspan="7" class="text-center">No hay hospitalizaciones disponibles</td>
+            </tr>
+            <tr *ngFor="let hospitalizacion of hospitalizaciones">
+              <td>{{ hospitalizacion.fecha_ingreso | date:'short' }}</td>
+              <td>{{ hospitalizacion.fecha_salida ? (hospitalizacion.fecha_salida | date:'short') : '-' }}</td>
+              <td>{{ getPacienteNombre(hospitalizacion.paciente_id) }}</td>
+              <td>{{ getMedicoNombre(hospitalizacion.medico_id) }}</td>
+              <td>{{ hospitalizacion.numero_habitacion }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="hospitalizacion.activo" [class.badge-danger]="!hospitalizacion.activo">
+                  {{ hospitalizacion.estado }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="editHospitalizacion(hospitalizacion)">Editar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteHospitalizacion(hospitalizacion)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingHospitalizacion ? 'Editar Hospitalización' : 'Nueva Hospitalización' }}</h5>
+          <button type="button" class="close" (click)="closeModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="hospitalizacionForm" (ngSubmit)="saveHospitalizacion()">
+            <div class="form-group">
+              <label for="paciente_id">Paciente *</label>
+              <select class="form-control" id="paciente_id" formControlName="paciente_id" [class.is-invalid]="hospitalizacionForm.get('paciente_id')?.invalid && hospitalizacionForm.get('paciente_id')?.touched">
+                <option value="">Seleccione un paciente</option>
+                <option *ngFor="let paciente of pacientes" [value]="paciente.id">
+                  {{ paciente.nombre }} {{ paciente.apellido }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="hospitalizacionForm.get('paciente_id')?.invalid && hospitalizacionForm.get('paciente_id')?.touched">
+                {{ getErrorMessage('paciente_id') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="medico_id">Médico *</label>
+              <select class="form-control" id="medico_id" formControlName="medico_id" [class.is-invalid]="hospitalizacionForm.get('medico_id')?.invalid && hospitalizacionForm.get('medico_id')?.touched">
+                <option value="">Seleccione un médico</option>
+                <option *ngFor="let medico of medicos" [value]="medico.id">
+                  {{ medico.nombre }} {{ medico.apellido }} - {{ medico.especialidad }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="hospitalizacionForm.get('medico_id')?.invalid && hospitalizacionForm.get('medico_id')?.touched">
+                {{ getErrorMessage('medico_id') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="enfermera_id">Enfermera</label>
+              <select class="form-control" id="enfermera_id" formControlName="enfermera_id">
+                <option value="">Seleccione una enfermera (opcional)</option>
+                <option *ngFor="let enfermera of enfermeras" [value]="enfermera.id">
+                  {{ enfermera.nombre }} {{ enfermera.apellido }} - {{ enfermera.turno }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="fecha_ingreso">Fecha de Ingreso *</label>
+              <input type="datetime-local" class="form-control" id="fecha_ingreso" formControlName="fecha_ingreso" [class.is-invalid]="hospitalizacionForm.get('fecha_ingreso')?.invalid && hospitalizacionForm.get('fecha_ingreso')?.touched">
+              <div class="invalid-feedback" *ngIf="hospitalizacionForm.get('fecha_ingreso')?.invalid && hospitalizacionForm.get('fecha_ingreso')?.touched">
+                {{ getErrorMessage('fecha_ingreso') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="fecha_salida">Fecha de Salida</label>
+              <input type="datetime-local" class="form-control" id="fecha_salida" formControlName="fecha_salida">
+            </div>
+            <div class="form-group">
+              <label for="numero_habitacion">Número de Habitación *</label>
+              <input type="text" class="form-control" id="numero_habitacion" formControlName="numero_habitacion" [class.is-invalid]="hospitalizacionForm.get('numero_habitacion')?.invalid && hospitalizacionForm.get('numero_habitacion')?.touched">
+              <div class="invalid-feedback" *ngIf="hospitalizacionForm.get('numero_habitacion')?.invalid && hospitalizacionForm.get('numero_habitacion')?.touched">
+                {{ getErrorMessage('numero_habitacion') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="motivo">Motivo *</label>
+              <input type="text" class="form-control" id="motivo" formControlName="motivo" [class.is-invalid]="hospitalizacionForm.get('motivo')?.invalid && hospitalizacionForm.get('motivo')?.touched">
+              <div class="invalid-feedback" *ngIf="hospitalizacionForm.get('motivo')?.invalid && hospitalizacionForm.get('motivo')?.touched">
+                {{ getErrorMessage('motivo') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="notas">Notas</label>
+              <textarea class="form-control" id="notas" formControlName="notas" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="saveHospitalizacion()">{{ editingHospitalizacion ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

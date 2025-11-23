@@ -1,0 +1,159 @@
+<div class="cita-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Citas</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nueva Cita</button>
+    </div>
+    
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <select 
+              class="form-control" 
+              [(ngModel)]="filters.paciente_id"
+              (change)="onFilterChange()"
+            >
+              <option value="">Todos los pacientes</option>
+              <option *ngFor="let paciente of pacientes" [value]="paciente.id">
+                {{ paciente.nombre }} {{ paciente.apellido }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select 
+              class="form-control" 
+              [(ngModel)]="filters.medico_id"
+              (change)="onFilterChange()"
+            >
+              <option value="">Todos los médicos</option>
+              <option *ngFor="let medico of medicos" [value]="medico.id">
+                {{ medico.nombre }} {{ medico.apellido }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Fecha Cita</th>
+              <th>Paciente</th>
+              <th>Médico</th>
+              <th>Motivo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="6" class="text-center">Cargando...</td>
+            </tr>
+            <tr *ngIf="!loading && citas.length === 0">
+              <td colspan="6" class="text-center">No hay citas disponibles</td>
+            </tr>
+            <tr *ngFor="let cita of citas">
+              <td>{{ cita.fecha_cita | date:'short' }}</td>
+              <td>{{ getPacienteNombre(cita.paciente_id) }}</td>
+              <td>{{ getMedicoNombre(cita.medico_id) }}</td>
+              <td>{{ cita.motivo }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="cita.activo" [class.badge-danger]="!cita.activo">
+                  {{ cita.estado }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="editCita(cita)">Editar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteCita(cita)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingCita ? 'Editar Cita' : 'Nueva Cita' }}</h5>
+          <button type="button" class="close" (click)="closeModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="citaForm" (ngSubmit)="saveCita()">
+            <div class="form-group">
+              <label for="paciente_id" class="form-label required">Paciente</label>
+              <select class="form-select" id="paciente_id" formControlName="paciente_id">
+                <option value="">Seleccione un paciente</option>
+                <option *ngFor="let paciente of pacientes" [value]="paciente.id">
+                  {{ paciente.nombre }} {{ paciente.apellido }}
+                </option>
+              </select>
+              <div class="error-message" *ngIf="citaForm.get('paciente_id')?.invalid && citaForm.get('paciente_id')?.touched">
+                {{ getErrorMessage('paciente_id') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="medico_id" class="form-label required">Médico</label>
+              <select class="form-select" id="medico_id" formControlName="medico_id">
+                <option value="">Seleccione un médico</option>
+                <option *ngFor="let medico of medicos" [value]="medico.id">
+                  {{ medico.nombre }} {{ medico.apellido }} - {{ medico.especialidad }}
+                </option>
+              </select>
+              <div class="error-message" *ngIf="citaForm.get('medico_id')?.invalid && citaForm.get('medico_id')?.touched">
+                {{ getErrorMessage('medico_id') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="fecha_cita" class="form-label required">Fecha y Hora de la Cita</label>
+              <input type="datetime-local" class="form-control" id="fecha_cita" formControlName="fecha_cita">
+              <div class="error-message" *ngIf="citaForm.get('fecha_cita')?.invalid && citaForm.get('fecha_cita')?.touched">
+                {{ getErrorMessage('fecha_cita') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="motivo" class="form-label required">Motivo</label>
+              <input type="text" class="form-control" id="motivo" formControlName="motivo" placeholder="Ingrese el motivo de la cita">
+              <div class="error-message" *ngIf="citaForm.get('motivo')?.invalid && citaForm.get('motivo')?.touched">
+                {{ getErrorMessage('motivo') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="notas" class="form-label">Notas</label>
+              <textarea class="form-control" id="notas" formControlName="notas" rows="3" placeholder="Ingrese notas adicionales (opcional)"></textarea>
+              <div class="error-message" *ngIf="citaForm.get('notas')?.invalid && citaForm.get('notas')?.touched">
+                {{ getErrorMessage('notas') }}
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="saveCita()">{{ editingCita ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

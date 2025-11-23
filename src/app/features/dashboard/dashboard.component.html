@@ -1,0 +1,128 @@
+<div class="dashboard">
+  <div class="welcome-section">
+    <div class="card glass">
+      <div class="card-body text-center">
+        <h1 class="welcome-title text-title-contrast">Dashboard del Sistema Hospitalario</h1>
+        <p class="welcome-subtitle text-high-contrast" *ngIf="isAdmin">
+          Gestión integral de pacientes, médicos y citas
+        </p>
+        <p class="welcome-subtitle text-high-contrast" *ngIf="isConsumidor">
+          Bienvenido, aquí puedes gestionar tus citas, facturas e historial médico
+        </p>
+        <p class="welcome-subtitle text-high-contrast" *ngIf="!isAdmin && !isConsumidor">
+          Panel de control del sistema
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- Dashboard para Admin -->
+    <div class="stats-grid" *ngIf="isAdmin">
+      <div class="stat-card">
+        <div class="stat-icon">PAC</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Pacientes</h3>
+          <a routerLink="/pacientes" class="btn-link">Ver Pacientes</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">MED</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Médicos</h3>
+          <a routerLink="/medicos" class="btn-link">Ver Médicos</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">ENF</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Enfermeras</h3>
+          <a routerLink="/enfermeras" class="btn-link">Ver Enfermeras</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">CIT</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Citas</h3>
+          <a routerLink="/citas" class="btn-link">Ver Citas</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">HOS</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Hospitalizaciones</h3>
+          <a routerLink="/hospitalizaciones" class="btn-link">Ver Hospitalizaciones</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">FAC</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Facturas</h3>
+          <a routerLink="/facturas" class="btn-link">Ver Facturas</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard para Consumidor -->
+    <div class="stats-grid" *ngIf="isConsumidor">
+      <div class="stat-card">
+        <div class="stat-icon">CIT</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Mis Citas</h3>
+          <p class="stat-description">Consulta y gestiona tus citas médicas</p>
+          <a routerLink="/citas" class="btn-link">Ver Mis Citas</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">FAC</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Mis Facturas</h3>
+          <p class="stat-description">Revisa tus facturas y pagos</p>
+          <a routerLink="/facturas" class="btn-link">Ver Mis Facturas</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">HIS</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Mi Historial Médico</h3>
+          <p class="stat-description">Accede a tu historial médico completo</p>
+          <a routerLink="/historiales-medicos" class="btn-link">Ver Mi Historial</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard para otros roles -->
+    <div class="stats-grid" *ngIf="!isAdmin && !isConsumidor">
+      <div class="stat-card">
+        <div class="stat-icon">CIT</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Citas</h3>
+          <a routerLink="/citas" class="btn-link">Ver Citas</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">HOS</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Hospitalizaciones</h3>
+          <a routerLink="/hospitalizaciones" class="btn-link">Ver Hospitalizaciones</a>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">HIS</div>
+        <div class="stat-info">
+          <h3 class="stat-label">Historiales Médicos</h3>
+          <a routerLink="/historiales-medicos" class="btn-link">Ver Historiales</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

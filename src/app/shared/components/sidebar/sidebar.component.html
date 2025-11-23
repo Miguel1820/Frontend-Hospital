@@ -1,36 +1,62 @@
-<div class="logo">
-    <a href="#" class="simple-text logo-mini">
+<!-- Botón toggle en el borde derecho -->
+<button class="sidebar-toggle" (click)="toggleSidebar()" [class.active]="isSidebarOpen">
+  <i class="now-ui-icons arrows-1_minimal-left" *ngIf="!isSidebarOpen"></i>
+  <i class="now-ui-icons arrows-1_minimal-right" *ngIf="isSidebarOpen"></i>
+</button>
+
+<!-- Sidebar derecho -->
+<aside class="right-sidebar" 
+       [class.open]="isSidebarOpen" 
+       [class.hover]="isHovering"
+       (mouseenter)="onSidebarHover()"
+       (mouseleave)="onSidebarLeave()">
+  
+  <div class="sidebar-header">
+    <div class="logo-section">
       <div class="logo-img">
-          <div class="logo-text">ITM</div>
+        <div class="logo-text">SH</div>
       </div>
-    </a>
-    <a href="#" class="simple-text logo-normal">
-        Sistema ITM
-    </a>
-</div>
-<div class="sidebar-wrapper">
-    <ul class="nav">
-        <li routerLinkActive="active" *ngFor="let menuItem of menuItems" class="{{menuItem.class}} nav-item">
-            <a [routerLink]="[menuItem.path]">
-                <i class="now-ui-icons {{menuItem.icon}}"></i>
-                <p>{{menuItem.title}}</p>
-            </a>
-        </li>
-    </ul>
-    
-    <!-- Información del usuario y logout -->
-    <div class="user-info" *ngIf="authService.getCurrentUser()">
-        <div class="user-details">
-            <div class="user-avatar">
-                <i class="now-ui-icons users_single-02"></i>
-            </div>
-            <div class="user-text">
-                <div class="user-name">{{authService.getCurrentUser()?.nombre}} {{authService.getCurrentUser()?.apellido}}</div>
-                <div class="user-role">{{authService.getCurrentUser()?.rol | titlecase}}</div>
-            </div>
-        </div>
-        <button class="logout-btn" (click)="logout()" title="Cerrar Sesión">
-            <i class="now-ui-icons media-1_button-power"></i>
-        </button>
+      <span class="brand-text">Sistema Hospitalario</span>
     </div>
-</div>
+    <button class="close-btn" (click)="closeSidebar()" *ngIf="isSidebarOpen">
+      <i class="now-ui-icons ui-1_simple-remove"></i>
+    </button>
+  </div>
+
+  <div class="sidebar-content">
+    <nav class="sidebar-nav">
+      <ul class="nav-menu">
+        <li routerLinkActive="active" *ngFor="let menuItem of menuItems" class="nav-item">
+          <a [routerLink]="[menuItem.path]" (click)="closeSidebar()">
+            <i class="now-ui-icons {{menuItem.icon}}"></i>
+            <span>{{menuItem.title}}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="sidebar-footer" *ngIf="authService.getCurrentUser()">
+    <div class="user-info-dropdown">
+      <button class="user-toggle" (click)="toggleUserMenu()">
+        <div class="user-avatar">
+          <i class="now-ui-icons users_single-02"></i>
+        </div>
+        <div class="user-text">
+          <div class="user-name">{{authService.getCurrentUser()?.nombre}} {{authService.getCurrentUser()?.apellido}}</div>
+          <div class="user-role">{{authService.getCurrentUser()?.rol | titlecase}}</div>
+        </div>
+        <i class="now-ui-icons arrows-1_minimal-down"></i>
+      </button>
+      <div class="dropdown-menu" [class.show]="isUserMenuOpen">
+        <a class="dropdown-item" (click)="logout()">
+          <i class="now-ui-icons media-1_button-power"></i>
+          <span>Cerrar Sesión</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Overlay para móviles -->
+<div class="sidebar-overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>

@@ -1,0 +1,152 @@
+<div class="paciente-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Pacientes</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nuevo Paciente</button>
+    </div>
+    
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Buscar por nombre..."
+              [(ngModel)]="filters.nombre"
+              (input)="onFilterChange()"
+            >
+          </div>
+          <div class="col-md-3">
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Buscar por email..."
+              [(ngModel)]="filters.email"
+              (input)="onFilterChange()"
+            >
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Fecha Nacimiento</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="7" class="text-center">Cargando...</td>
+            </tr>
+            <tr *ngIf="!loading && pacientes.length === 0">
+              <td colspan="7" class="text-center">No hay pacientes disponibles</td>
+            </tr>
+            <tr *ngFor="let paciente of pacientes">
+              <td>{{ paciente.nombre }}</td>
+              <td>{{ paciente.apellido }}</td>
+              <td>{{ paciente.email }}</td>
+              <td>{{ paciente.telefono || '-' }}</td>
+              <td>{{ paciente.fecha_nacimiento | date:'short' }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="paciente.activo" [class.badge-danger]="!paciente.activo">
+                  {{ paciente.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="editPaciente(paciente)">Editar</button>
+                <button class="btn btn-sm btn-danger" (click)="deletePaciente(paciente)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingPaciente ? 'Editar Paciente' : 'Nuevo Paciente' }}</h5>
+          <button type="button" class="close" (click)="closeModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="pacienteForm" (ngSubmit)="savePaciente()">
+            <div class="form-group">
+              <label for="nombre" class="form-label required">Nombre</label>
+              <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Ingrese el nombre">
+              <div class="error-message" *ngIf="pacienteForm.get('nombre')?.invalid && pacienteForm.get('nombre')?.touched">
+                {{ getErrorMessage('nombre') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="apellido" class="form-label required">Apellido</label>
+              <input type="text" class="form-control" id="apellido" formControlName="apellido" placeholder="Ingrese el apellido">
+              <div class="error-message" *ngIf="pacienteForm.get('apellido')?.invalid && pacienteForm.get('apellido')?.touched">
+                {{ getErrorMessage('apellido') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email" class="form-label required">Email</label>
+              <input type="email" class="form-control" id="email" formControlName="email" placeholder="Ingrese el email">
+              <div class="error-message" *ngIf="pacienteForm.get('email')?.invalid && pacienteForm.get('email')?.touched">
+                {{ getErrorMessage('email') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono" formControlName="telefono" placeholder="Ingrese el teléfono (opcional)">
+              <div class="error-message" *ngIf="pacienteForm.get('telefono')?.invalid && pacienteForm.get('telefono')?.touched">
+                {{ getErrorMessage('telefono') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="fecha_nacimiento" class="form-label required">Fecha de Nacimiento</label>
+              <input type="date" class="form-control" id="fecha_nacimiento" formControlName="fecha_nacimiento">
+              <div class="error-message" *ngIf="pacienteForm.get('fecha_nacimiento')?.invalid && pacienteForm.get('fecha_nacimiento')?.touched">
+                {{ getErrorMessage('fecha_nacimiento') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="direccion" class="form-label">Dirección</label>
+              <input type="text" class="form-control" id="direccion" formControlName="direccion" placeholder="Ingrese la dirección (opcional)">
+              <div class="error-message" *ngIf="pacienteForm.get('direccion')?.invalid && pacienteForm.get('direccion')?.touched">
+                {{ getErrorMessage('direccion') }}
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="savePaciente()">{{ editingPaciente ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
