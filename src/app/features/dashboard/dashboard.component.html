@@ -1,10 +1,10 @@
 <div class="dashboard">
   <div class="welcome-section">
-    <div class="card glass">
+    <div class="start-card card">
       <div class="card-body text-center">
-        <h1 class="welcome-title text-title-contrast">Dashboard del Sistema Hospitalario</h1>
+        <h1 class="welcome-title text-title-contrast">Dashboard Hospital LOS ENA-NOS</h1>
         <p class="welcome-subtitle text-high-contrast" *ngIf="isAdmin">
-          Gestión integral de pacientes, médicos y citas
+          Gestión integral de pacientes, médicos, enfermeras y citas
         </p>
         <p class="welcome-subtitle text-high-contrast" *ngIf="isConsumidor">
           Bienvenido, aquí puedes gestionar tus citas, facturas e historial médico
@@ -20,49 +20,67 @@
     <!-- Dashboard para Admin -->
     <div class="stats-grid" *ngIf="isAdmin">
       <div class="stat-card">
-        <div class="stat-icon">PAC</div>
+        <div class="stat-icon">
+          <i class="fas fa-user-injured"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Pacientes</h3>
+          <h3>Pacientes</h3>
+          <p class="stat-description">Gestión completa de pacientes</p>
           <a routerLink="/pacientes" class="btn-link">Ver Pacientes</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">MED</div>
+        <div class="stat-icon">
+          <i class="fas fa-user-md"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Médicos</h3>
+          <h3>Médicos</h3>
+          <p class="stat-description">Registro y control</p>
           <a routerLink="/medicos" class="btn-link">Ver Médicos</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">ENF</div>
+        <div class="stat-icon">
+          <i class="fas fa-user-nurse"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Enfermeras</h3>
+          <h3>Enfermeras</h3>
+          <p class="stat-description">Gestión del personal</p>
           <a routerLink="/enfermeras" class="btn-link">Ver Enfermeras</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">CIT</div>
+        <div class="stat-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Citas</h3>
+          <h3>Citas</h3>
+          <p class="stat-description">Programación y seguimiento</p>
           <a routerLink="/citas" class="btn-link">Ver Citas</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">HOS</div>
+        <div class="stat-icon">
+          <i class="fas fa-procedures"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Hospitalizaciones</h3>
+          <h3>Hospitalizaciones</h3>
+          <p class="stat-description">Pacientes internados</p>
           <a routerLink="/hospitalizaciones" class="btn-link">Ver Hospitalizaciones</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">FAC</div>
+        <div class="stat-icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Facturas</h3>
+          <h3>Facturas</h3>
+          <p class="stat-description">Facturación y pagos</p>
           <a routerLink="/facturas" class="btn-link">Ver Facturas</a>
         </div>
       </div>
@@ -71,27 +89,33 @@
     <!-- Dashboard para Consumidor -->
     <div class="stats-grid" *ngIf="isConsumidor">
       <div class="stat-card">
-        <div class="stat-icon">CIT</div>
+        <div class="stat-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Mis Citas</h3>
-          <p class="stat-description">Consulta y gestiona tus citas médicas</p>
+          <h3>Mis Citas</h3>
+          <p class="stat-description">Consulta y gestiona tus citas</p>
           <a routerLink="/citas" class="btn-link">Ver Mis Citas</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">FAC</div>
+        <div class="stat-icon">
+          <i class="fas fa-file-invoice-dollar"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Mis Facturas</h3>
+          <h3>Mis Facturas</h3>
           <p class="stat-description">Revisa tus facturas y pagos</p>
           <a routerLink="/facturas" class="btn-link">Ver Mis Facturas</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">HIS</div>
+        <div class="stat-icon">
+          <i class="fas fa-file-medical"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Mi Historial Médico</h3>
+          <h3>Mi Historial Médico</h3>
           <p class="stat-description">Accede a tu historial médico completo</p>
           <a routerLink="/historiales-medicos" class="btn-link">Ver Mi Historial</a>
         </div>
@@ -101,25 +125,31 @@
     <!-- Dashboard para otros roles -->
     <div class="stats-grid" *ngIf="!isAdmin && !isConsumidor">
       <div class="stat-card">
-        <div class="stat-icon">CIT</div>
+        <div class="stat-icon">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Citas</h3>
+          <h3>Citas</h3>
           <a routerLink="/citas" class="btn-link">Ver Citas</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">HOS</div>
+        <div class="stat-icon">
+          <i class="fas fa-procedures"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Hospitalizaciones</h3>
+          <h3>Hospitalizaciones</h3>
           <a routerLink="/hospitalizaciones" class="btn-link">Ver Hospitalizaciones</a>
         </div>
       </div>
 
       <div class="stat-card">
-        <div class="stat-icon">HIS</div>
+        <div class="stat-icon">
+          <i class="fas fa-file-medical"></i>
+        </div>
         <div class="stat-info">
-          <h3 class="stat-label">Historiales Médicos</h3>
+          <h3>Historiales Médicos</h3>
           <a routerLink="/historiales-medicos" class="btn-link">Ver Historiales</a>
         </div>
       </div>

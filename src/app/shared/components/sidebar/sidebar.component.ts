@@ -12,17 +12,17 @@ declare interface RouteInfo {
 }
 
 export const ROUTES: RouteInfo[] = [
-    { path: '/dashboard', title: 'Dashboard',  icon: 'design_app', class: '' },
-    { path: '/usuarios', title: 'Usuarios',  icon:'users_single-02', class: '', roles: ['admin'] },
-    { path: '/pacientes', title: 'Pacientes',  icon:'users_single-02', class: '', roles: ['admin'] },
-    { path: '/medicos', title: 'Médicos',  icon:'users_single-02', class: '', roles: ['admin'] },
-    { path: '/enfermeras', title: 'Enfermeras',  icon:'users_single-02', class: '', roles: ['admin'] },
-    { path: '/citas', title: 'Citas',  icon:'ui-1_calendar-60', class: '' },
-    { path: '/hospitalizaciones', title: 'Hospitalizaciones',  icon:'business_bank', class: '', roles: ['admin'] },
-    { path: '/historiales-medicos', title: 'Historiales Médicos',  icon:'files_paper', class: '' },
-    { path: '/historiales-entrada', title: 'Historiales Entrada',  icon:'files_paper', class: '', roles: ['admin'] },
-    { path: '/facturas', title: 'Facturas',  icon:'business_money-coins', class: '' },
-    { path: '/facturas-detalle', title: 'Facturas Detalle',  icon:'business_money-coins', class: '', roles: ['admin'] }
+    { path: '/dashboard', title: 'Dashboard',  icon: 'fas fa-tachometer-alt', class: '' },
+    { path: '/usuarios', title: 'Usuarios',  icon:'fas fa-users-cog', class: '', roles: ['admin'] },
+    { path: '/pacientes', title: 'Pacientes',  icon:'fas fa-user-injured', class: '', roles: ['admin'] },
+    { path: '/medicos', title: 'Médicos',  icon:'fas fa-user-md', class: '', roles: ['admin'] },
+    { path: '/enfermeras', title: 'Enfermeras',  icon:'fas fa-user-nurse', class: '', roles: ['admin'] },
+    { path: '/citas', title: 'Citas',  icon:'fas fa-calendar-alt', class: '' },
+    { path: '/hospitalizaciones', title: 'Hospitalizaciones',  icon:'fas fa-procedures', class: '', roles: ['admin'] },
+    { path: '/historiales-medicos', title: 'Historiales Médicos',  icon:'fas fa-file-medical', class: '' },
+    { path: '/historiales-entrada', title: 'Historiales Entrada',  icon:'fas fa-clipboard-list', class: '', roles: ['admin'] },
+    { path: '/facturas', title: 'Facturas',  icon:'fas fa-file-invoice-dollar', class: '' },
+    { path: '/facturas-detalle', title: 'Facturas Detalle',  icon:'fas fa-receipt', class: '', roles: ['admin'] }
 ];
 
 @Component({

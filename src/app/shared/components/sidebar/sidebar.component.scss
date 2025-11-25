@@ -31,28 +31,77 @@
   top: 50%;
   right: 0;
   transform: translateY(-50%);
-  width: 40px;
-  height: 60px;
+  width: 52px;
+  height: 90px;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border: none;
-  border-radius: 8px 0 0 8px;
+  border: 2px solid #10b981;
+  border-right: none;
+  border-radius: 16px 0 0 16px;
   cursor: pointer;
   z-index: 1001;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 18px;
-  transition: all 0.3s ease;
-  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.2);
+  font-size: 26px;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
 
-  &:hover {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    width: 45px;
+  // Icono grande y claro (3 líneas = menú)
+  &::before {
+    content: "\f0c9";                    /* Font Awesome bars (menú) */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #10b981;
   }
 
+  //luz suave al pasar el ratón
+  &:hover {
+    width: 56px;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    box-shadow: 
+      0 6px 20px rgba(0, 0, 0, 0.35),
+      0 0 20px rgba(16, 185, 129, 0.18);   /* ← brillo verde muy suave */
+    border-color: #34d399;                 /* borde un poco más claro al hover */
+    transform: translateY(-50%) translateX(-2px);
+  }
+
+  /* Pequeña animación de pulso muy sutil cuando pasas el mouse */
+  &:hover::after {
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    70%  { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  // CUANDO EL SIDEBAR ESTÁ ABIERTO → EL BOTÓN SE DESPLAZA 280px A LA IZQUIERDA
+  .right-sidebar.open ~ &,
   &.active {
-    right: 280px;
+    right: 280px !important;     // ← ESTA LÍNEA ES LA CLAVE
+  }
+
+  .right-sidebar.open ~ &::before,
+  &.active::before {
+    content: "\f060";
+    color: #60a5fa;
+  }
+
+  // Pequeño puntito verde para más estilo
+  &::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 15px #10b981;
+    opacity: 0.6;
   }
 }
 
@@ -65,39 +114,55 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 70px;
 
+  //letra blanca para el logo y el texto
+  .logo-normal { 
+    color: #ffffff !important; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+  }
+  .logo-normal small {
+     color: #e0e0e0 !important;
+     font-size: 10px !important;
+     margin-top: -2px;
+     opacity: 0.9;
+     letter-spacing: 1.2px;
+     text-transform: uppercase;
+  }
+
+  // Muy pequeña y sutil 
+  .logo-normal small {
+    font-size: 9px !important;
+    opacity: 0.75;
+  }
+
   .logo-section {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     flex: 1;
     min-width: 0;
+    justify-content: center;
   }
 
   .logo-img {
-    width: 40px;
-    height: 40px;
+    width: 70px;
+    height: 70px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.18);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
 
-  .logo-text {
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-    text-align: center;
-  }
-
-  .brand-text {
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .logo-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
   }
 
   .close-btn {
@@ -123,7 +188,6 @@
   overflow-x: hidden;
   padding: 10px 0;
 
-  // Estilos de scrollbar
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -189,10 +253,41 @@
     }
   }
 
-  &.active a {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border-left: 3px solid #60a5fa;
+  // ==== FLECHITA VERDE + INDICADOR ACTIVO (AQUÍ ESTÁ LO NUEVO) ====
+  &.active > a {
+    position: relative;
+    background: rgba(16, 185, 129, 0.18) !important;
+    color: white !important;
+    font-weight: 600;
+    border-left: 4px solid #10b981 !important;
+
+    // FLECHITA TRIANGULAR QUE SALE A LA IZQUIERDA
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 12px solid transparent;
+      border-bottom: 12px solid transparent;
+      border-left: 14px solid #10b981;
+      z-index: 10;
+    }
+
+    // Pequeña línea sutil dentro para más elegancia
+    &::after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+    }
   }
 }
 
@@ -362,15 +457,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-// Simple text icons
-.now-ui-icons.design_app:before { content: "■"; }
-.now-ui-icons.users_single-02:before { content: "▲"; }
-.now-ui-icons.ui-1_calendar-60:before { content: "○"; }
-.now-ui-icons.business_bank:before { content: "◆"; }
-.now-ui-icons.files_paper:before { content: "□"; }
-.now-ui-icons.business_money-coins:before { content: "●"; }
-.now-ui-icons.media-1_button-power:before { content: "×"; }
-.now-ui-icons.arrows-1_minimal-down:before { content: "▼"; }
-.now-ui-icons.arrows-1_minimal-left:before { content: "◄"; }
-.now-ui-icons.arrows-1_minimal-right:before { content: "►"; }
-.now-ui-icons.ui-1_simple-remove:before { content: "✕"; }
+//elimina el subrayado de los enlaces del sidebar
+.sidebar-header .logo-normal,
+.sidebar-header a.logo-normal,
+a.logo-normal,
+.simple-text.logo-normal {
+  text-decoration: none !important;
+}

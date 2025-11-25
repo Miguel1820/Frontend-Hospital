@@ -146,9 +146,9 @@ body {
   transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
 }
-
+  
 .btn-secondary {
-  background: linear-gradient(135deg, var(--secondary-color), #475569);
+  background: linear-gradient(135deg, var(--secondary-color), #000000);
   color: white;
 }
 
@@ -478,14 +478,14 @@ body {
 
 /* Text contrast utilities */
 .text-high-contrast {
-  color: rgba(255, 255, 255, 0.95) !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  color: rgba(0, 0, 0, 0.95) !important;
+  text-shadow: 0 1px 3px rgb(255, 255, 255) !important;
   font-weight: 600 !important;
 }
 
 .text-title-contrast {
-  color: white !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6) !important;
+  color: black !important;
+  text-shadow: 0 2px 4px rgb(255, 255, 255) !important;
   font-weight: 800 !important;
   letter-spacing: -0.025em !important;
 }
