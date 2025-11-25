@@ -41,7 +41,7 @@ export class UsuarioListComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       nombre_usuario: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       email: ['', [Validators.required, emailValidator()]],
-      contrasena: ['', [Validators.minLength(6)]],
+      contrasena: ['', [Validators.required, Validators.minLength(8)]],
       telefono: ['', [phoneValidator()]],
       es_admin: [false]
     });
@@ -100,7 +100,7 @@ export class UsuarioListComponent implements OnInit {
       telefono: '',
       es_admin: false
     });
-    this.usuarioForm.get('contrasena')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.usuarioForm.get('contrasena')?.setValidators([Validators.required, Validators.minLength(8)]);
     this.usuarioForm.get('contrasena')?.updateValueAndValidity();
     this.showModal = true;
   }
@@ -169,7 +169,26 @@ export class UsuarioListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al actualizar usuario:', error);
-          alert('Error al actualizar el usuario: ' + (error.error?.detail || error.message));
+          let errorMessage = 'Error al actualizar el usuario';
+          
+          if (error.error?.detail) {
+            const detail = error.error.detail;
+            if (typeof detail === 'string') {
+              errorMessage = detail;
+            } else if (detail.message) {
+              errorMessage = detail.message;
+            } else if (detail.error_type && detail.message) {
+              errorMessage = `${detail.error_type}: ${detail.message}`;
+            } else {
+              errorMessage = JSON.stringify(detail);
+            }
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          alert(errorMessage);
         }
       });
     } else {
@@ -190,7 +209,26 @@ export class UsuarioListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al crear usuario:', error);
-          alert('Error al crear el usuario: ' + (error.error?.detail || error.message));
+          let errorMessage = 'Error al crear el usuario';
+          
+          if (error.error?.detail) {
+            const detail = error.error.detail;
+            if (typeof detail === 'string') {
+              errorMessage = detail;
+            } else if (detail.message) {
+              errorMessage = detail.message;
+            } else if (detail.error_type && detail.message) {
+              errorMessage = `${detail.error_type}: ${detail.message}`;
+            } else {
+              errorMessage = JSON.stringify(detail);
+            }
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          alert(errorMessage);
         }
       });
     }

@@ -86,7 +86,30 @@ export class AuthService {
         };
       }),
       catchError((error) => {
-        const errorMessage = error.error?.detail || error.message || 'Error al iniciar sesión. Verifica tus credenciales.';
+        console.error('Error completo en login:', error);
+        
+        let errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
+        
+        if (error.error) {
+          // Si es un objeto de error de FastAPI
+          if (typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.error.detail) {
+            // Detalle puede ser string o array
+            if (typeof error.error.detail === 'string') {
+              errorMessage = error.error.detail;
+            } else if (Array.isArray(error.error.detail)) {
+              errorMessage = error.error.detail.map((e: any) => e.msg || e.message || JSON.stringify(e)).join(', ');
+            } else {
+              errorMessage = JSON.stringify(error.error.detail);
+            }
+          } else if (error.error.message) {
+            errorMessage = error.error.message;
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
         return throwError(() => new Error(errorMessage));
       })
     );

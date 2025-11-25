@@ -178,7 +178,7 @@
                 class="form-control" 
                 id="contrasena" 
                 formControlName="contrasena"
-                placeholder="Ingrese la contraseña (mínimo 6 caracteres)"
+                placeholder="Mínimo 8 caracteres: mayúscula, minúscula, número y carácter especial"
               >
               <div class="error-message" *ngIf="usuarioForm.get('contrasena')?.invalid && usuarioForm.get('contrasena')?.touched">
                 {{ getErrorMessage('contrasena') }}
