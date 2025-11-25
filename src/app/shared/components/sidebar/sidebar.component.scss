@@ -221,6 +221,7 @@
   a {
     display: flex;
     align-items: center;
+    gap: 20px;
     padding: 12px 20px;
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
@@ -228,6 +229,14 @@
     font-weight: 500;
     transition: all 0.3s ease;
     white-space: nowrap;
+
+    i {
+      font-size: 18px;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+      color: rgba(255, 255, 255, 0.8);
+    }
 
     span {
       flex: 1;
@@ -238,6 +247,10 @@
     &:hover {
       background: rgba(255, 255, 255, 0.1);
       color: white;
+      
+      i {
+        color: white;
+      }
     }
   }
 

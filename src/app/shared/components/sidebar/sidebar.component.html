@@ -20,12 +20,12 @@
         <img src="assets/imagenes/logo_empresa.png" alt="Logo">
       </div>
       <a href="#" class="simple-text logo-normal">
-            HOSPITAL LOS ENA-NOS
+            Sistema Hospitalario
             <small>SISTEMA DE GESTIÓN</small>
       </a>
     </div>
     <button class="close-btn" (click)="closeSidebar()" *ngIf="isSidebarOpen">
-      <span class="close-icon">×</span>
+      <i class="now-ui-icons ui-1_simple-remove"></i>
     </button>
   </div>
 
@@ -34,6 +34,7 @@
       <ul class="nav-menu">
         <li routerLinkActive="active" *ngFor="let menuItem of menuItems" class="nav-item">
           <a [routerLink]="[menuItem.path]" (click)="closeSidebar()">
+            <i [class]="menuItem.icon"></i>
             <span>{{menuItem.title}}</span>
           </a>
         </li>
@@ -45,16 +46,17 @@
     <div class="user-info-dropdown">
       <button class="user-toggle" (click)="toggleUserMenu()">
         <div class="user-avatar">
-          <span class="user-initial">{{authService.getCurrentUser()?.nombre?.charAt(0) || 'U'}}</span>
+          <i class="now-ui-icons users_single-02"></i>
         </div>
         <div class="user-text">
           <div class="user-name">{{authService.getCurrentUser()?.nombre}} {{authService.getCurrentUser()?.apellido}}</div>
           <div class="user-role">{{authService.getCurrentUser()?.rol | titlecase}}</div>
         </div>
-        <span class="dropdown-arrow">▼</span>
+        <i class="now-ui-icons arrows-1_minimal-down"></i>
       </button>
       <div class="dropdown-menu" [class.show]="isUserMenuOpen">
         <a class="dropdown-item" (click)="logout()">
+          <i class="now-ui-icons media-1_button-power"></i>
           <span>Cerrar Sesión</span>
         </a>
       </div>

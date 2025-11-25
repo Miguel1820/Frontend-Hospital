@@ -39,6 +39,9 @@
     <h2 class="section-title">Estadísticas del Sistema</h2>
     <div class="stats-cards-grid">
       <div class="stat-card-large">
+        <div class="stat-icon-large">
+          <i class="fas fa-users-cog"></i>
+        </div>
         <div class="stat-content-centered">
           <h3 class="stat-title">Usuarios Registrados</h3>
           <p class="stat-number">{{ stats.usuariosRegistrados }}</p>
@@ -47,6 +50,9 @@
       </div>
 
       <div class="stat-card-large">
+        <div class="stat-icon-large">
+          <i class="fas fa-user-injured"></i>
+        </div>
         <div class="stat-content-centered">
           <h3 class="stat-title">Pacientes Registrados</h3>
           <p class="stat-number">{{ stats.pacientesRegistrados }}</p>
@@ -55,6 +61,9 @@
       </div>
 
       <div class="stat-card-large">
+        <div class="stat-icon-large">
+          <i class="fas fa-user-md"></i>
+        </div>
         <div class="stat-content-centered">
           <h3 class="stat-title">Médicos Registrados</h3>
           <p class="stat-number">{{ stats.medicosRegistrados }}</p>
@@ -63,6 +72,9 @@
       </div>
 
       <div class="stat-card-large">
+        <div class="stat-icon-large">
+          <i class="fas fa-user-nurse"></i>
+        </div>
         <div class="stat-content-centered">
           <h3 class="stat-title">Enfermeras Registradas</h3>
           <p class="stat-number">{{ stats.enfermerasRegistradas }}</p>
@@ -71,6 +83,9 @@
       </div>
 
       <div class="stat-card-large highlight">
+        <div class="stat-icon-large">
+          <i class="fas fa-procedures"></i>
+        </div>
         <div class="stat-content-centered">
           <h3 class="stat-title">Hospitalizaciones Activas</h3>
           <p class="stat-number">{{ stats.hospitalizacionesActivas }}</p>
@@ -79,6 +94,9 @@
       </div>
 
       <div class="stat-card-large highlight">
+        <div class="stat-icon-large">
+          <i class="fas fa-calendar-alt"></i>
+        </div>
         <div class="stat-content-centered">
           <h3 class="stat-title">Citas del Día</h3>
           <p class="stat-number">{{ stats.citasHoy }}</p>
@@ -87,6 +105,9 @@
       </div>
 
       <div class="stat-card-large">
+        <div class="stat-icon-large">
+          <i class="fas fa-calendar-check"></i>
+        </div>
         <div class="stat-content-centered">
           <h3 class="stat-title">Total de Citas</h3>
           <p class="stat-number">{{ stats.totalCitas }}</p>
@@ -102,31 +123,53 @@
     <p>Cargando estadísticas...</p>
   </div>
 
+  <!-- Enlaces de Administración -->
+  <div class="admin-links-section" *ngIf="isAdmin">
+    <div class="admin-links">
+      <a href="http://localhost:8000/docs" target="_blank" class="admin-link">
+        <i class="fas fa-code"></i>
+        <span>Documentación API</span>
+      </a>
+      <a href="https://console.neon.tech" target="_blank" class="admin-link">
+        <i class="fas fa-database"></i>
+        <span>Base de Datos Neon</span>
+      </a>
+    </div>
+  </div>
+
   <!-- Barra de Navegación Rápida -->
   <div class="dashboard-content" *ngIf="isAdmin">
     <div class="quick-nav-bar">
       <a routerLink="/pacientes" class="nav-link-item">
+        <i class="fas fa-user-injured"></i>
         <span class="nav-text">Pacientes</span>
       </a>
       <a routerLink="/medicos" class="nav-link-item">
+        <i class="fas fa-user-md"></i>
         <span class="nav-text">Médicos</span>
       </a>
       <a routerLink="/enfermeras" class="nav-link-item">
+        <i class="fas fa-user-nurse"></i>
         <span class="nav-text">Enfermeras</span>
       </a>
       <a routerLink="/citas" class="nav-link-item">
+        <i class="fas fa-calendar-alt"></i>
         <span class="nav-text">Citas</span>
       </a>
       <a routerLink="/hospitalizaciones" class="nav-link-item">
+        <i class="fas fa-procedures"></i>
         <span class="nav-text">Hospitalizaciones</span>
       </a>
       <a routerLink="/historiales-medicos" class="nav-link-item">
+        <i class="fas fa-file-medical"></i>
         <span class="nav-text">Historiales Médicos</span>
       </a>
       <a routerLink="/facturas" class="nav-link-item">
+        <i class="fas fa-file-invoice-dollar"></i>
         <span class="nav-text">Facturas</span>
       </a>
       <a routerLink="/usuarios" class="nav-link-item">
+        <i class="fas fa-users-cog"></i>
         <span class="nav-text">Usuarios</span>
       </a>
     </div>
@@ -136,12 +179,15 @@
   <div class="dashboard-content" *ngIf="isConsumidor">
     <div class="quick-nav-bar">
       <a routerLink="/citas" class="nav-link-item">
+        <i class="fas fa-calendar-alt"></i>
         <span class="nav-text">Mis Citas</span>
       </a>
       <a routerLink="/facturas" class="nav-link-item">
+        <i class="fas fa-file-invoice-dollar"></i>
         <span class="nav-text">Mis Facturas</span>
       </a>
       <a routerLink="/historiales-medicos" class="nav-link-item">
+        <i class="fas fa-file-medical"></i>
         <span class="nav-text">Mi Historial</span>
       </a>
     </div>
@@ -151,18 +197,23 @@
   <div class="dashboard-content" *ngIf="!isAdmin && !isConsumidor">
     <div class="quick-nav-bar">
       <a routerLink="/citas" class="nav-link-item">
+        <i class="fas fa-calendar-alt"></i>
         <span class="nav-text">Mis Citas</span>
       </a>
       <a routerLink="/pacientes" class="nav-link-item">
+        <i class="fas fa-user-injured"></i>
         <span class="nav-text">Pacientes</span>
       </a>
       <a routerLink="/hospitalizaciones" class="nav-link-item">
+        <i class="fas fa-procedures"></i>
         <span class="nav-text">Hospitalizaciones</span>
       </a>
       <a routerLink="/historiales-medicos" class="nav-link-item">
+        <i class="fas fa-file-medical"></i>
         <span class="nav-text">Historiales Médicos</span>
       </a>
       <a routerLink="/medicos" class="nav-link-item">
+        <i class="fas fa-user-md"></i>
         <span class="nav-text">Médicos</span>
       </a>
     </div>
