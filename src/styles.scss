@@ -8,15 +8,16 @@
 }
 
 :root {
-  --primary-color: #3b82f6;
-  --primary-dark: #2563eb;
+  --primary-color: #0f172a;
+  --primary-dark: #020617;
+  --primary-light: #1e293b;
   --secondary-color: #64748b;
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
   --info-color: #06b6d4;
   --light-color: #f8fafc;
-  --dark-color: #1e293b;
+  --dark-color: #0f172a;
   --border-color: #e2e8f0;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -30,7 +31,7 @@ body {
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.6;
   color: var(--dark-color);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   min-height: 100vh;
   font-size: 16px;
   text-rendering: optimizeLegibility;
@@ -136,7 +137,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
   color: white;
   box-shadow: var(--shadow-md);
 }
@@ -145,9 +146,9 @@ body {
   transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
 }
-
+  
 .btn-secondary {
-  background: linear-gradient(135deg, var(--secondary-color), #475569);
+  background: linear-gradient(135deg, var(--secondary-color), #000000);
   color: white;
 }
 
@@ -477,14 +478,14 @@ body {
 
 /* Text contrast utilities */
 .text-high-contrast {
-  color: rgba(255, 255, 255, 0.95) !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+  color: rgba(0, 0, 0, 0.95) !important;
+  text-shadow: 0 1px 3px rgb(255, 255, 255) !important;
   font-weight: 600 !important;
 }
 
 .text-title-contrast {
-  color: white !important;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6) !important;
+  color: black !important;
+  text-shadow: 0 2px 4px rgb(255, 255, 255) !important;
   font-weight: 800 !important;
   letter-spacing: -0.025em !important;
 }
@@ -583,3 +584,112 @@ body {
 .now-ui-icons.ui-1_simple-add:before { content: "+"; }
 .now-ui-icons.ui-2_settings-90:before { content: "●"; }
 .now-ui-icons.ui-1_simple-remove:before { content: "×"; }
+
+/* Modal scroll fix */
+.modal {
+  overflow-y: auto;
+}
+
+.modal-dialog {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.modal-body {
+  overflow-y: auto;
+  max-height: calc(90vh - 120px);
+  flex: 1 1 auto;
+}
+
+.modal-dialog.modal-lg {
+  max-width: 800px;
+}
+
+.modal-dialog.modal-lg .modal-body {
+  max-height: calc(90vh - 140px);
+}
+
+/* Estilos para validación de formularios */
+.form-control {
+  &.ng-invalid.ng-touched,
+  &.ng-invalid.ng-dirty {
+    border-color: var(--danger-color) !important;
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+  }
+
+  &.ng-valid.ng-touched,
+  &.ng-valid.ng-dirty {
+    border-color: var(--success-color) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+  }
+}
+
+.form-select {
+  &.ng-invalid.ng-touched,
+  &.ng-invalid.ng-dirty {
+    border-color: var(--danger-color) !important;
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+  }
+
+  &.ng-valid.ng-touched,
+  &.ng-valid.ng-dirty {
+    border-color: var(--success-color) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+  }
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--danger-color);
+  font-weight: 500;
+}
+
+.valid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--success-color);
+}
+
+.form-label {
+  &.required::after {
+    content: ' *';
+    color: var(--danger-color);
+  }
+}
+
+/* Estilos para mensajes de error en formularios */
+.error-message {
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+  font-weight: 500;
+}
+
+.error-message::before {
+  content: '⚠ ';
+  margin-right: 0.25rem;
+}
+
+/* Estilos para campos deshabilitados */
+.form-control:disabled,
+.form-select:disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+  opacity: 0.6;
+  cursor: not-allowed;
+}

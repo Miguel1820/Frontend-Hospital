@@ -1,0 +1,197 @@
+<div class="enfermera-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Enfermeras</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nueva Enfermera</button>
+    </div>
+    
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Buscar por nombre..."
+              [(ngModel)]="filters.nombre"
+              (input)="onFilterChange()"
+            >
+          </div>
+          <div class="col-md-3">
+            <select 
+              class="form-control" 
+              [(ngModel)]="filters.turno"
+              (change)="onFilterChange()"
+            >
+              <option value="">Todos los turnos</option>
+              <option value="mañana">Mañana</option>
+              <option value="tarde">Tarde</option>
+              <option value="noche">Noche</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <div class="form-check mt-2">
+              <input 
+                type="checkbox" 
+                class="form-check-input" 
+                id="includeInactive"
+                [(ngModel)]="includeInactive"
+                (change)="onFilterChange()"
+              >
+              <label class="form-check-label" for="includeInactive">
+                Incluir Inactivos
+              </label>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Email</th>
+              <th>Número Licencia</th>
+              <th>Turno</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="7" class="text-center">Cargando...</td>
+            </tr>
+            <tr *ngIf="!loading && enfermeras.length === 0">
+              <td colspan="7" class="text-center">No hay enfermeras disponibles</td>
+            </tr>
+            <tr *ngFor="let enfermera of enfermeras">
+              <td>{{ enfermera.nombre }}</td>
+              <td>{{ enfermera.apellido }}</td>
+              <td>{{ enfermera.email }}</td>
+              <td>{{ enfermera.numero_licencia }}</td>
+              <td>{{ enfermera.turno }}</td>
+              <td>
+                <span class="badge" [class.badge-success]="enfermera.activo" [class.badge-danger]="!enfermera.activo">
+                  {{ enfermera.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="editEnfermera(enfermera)">Editar</button>
+                <button 
+                  *ngIf="enfermera.activo" 
+                  class="btn btn-sm btn-warning" 
+                  (click)="inactivarEnfermera(enfermera)"
+                  title="Inactivar enfermera"
+                >
+                  Inactivar
+                </button>
+                <button 
+                  *ngIf="!enfermera.activo" 
+                  class="btn btn-sm btn-success" 
+                  (click)="reactivarEnfermera(enfermera)"
+                  title="Reactivar enfermera"
+                >
+                  Reactivar
+                </button>
+                <button 
+                  *ngIf="!enfermera.activo" 
+                  class="btn btn-sm btn-danger" 
+                  (click)="eliminarEnfermeraPermanente(enfermera)"
+                  title="Eliminar permanentemente"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingEnfermera ? 'Editar Enfermera' : 'Nueva Enfermera' }}</h5>
+          <button type="button" class="close" (click)="closeModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="enfermeraForm" (ngSubmit)="saveEnfermera()">
+            <div class="form-group">
+              <label for="nombre" class="form-label required">Nombre</label>
+              <input type="text" class="form-control" id="nombre" formControlName="nombre" placeholder="Ingrese el nombre">
+              <div class="error-message" *ngIf="enfermeraForm.get('nombre')?.invalid && enfermeraForm.get('nombre')?.touched">
+                {{ getErrorMessage('nombre') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="apellido" class="form-label required">Apellido</label>
+              <input type="text" class="form-control" id="apellido" formControlName="apellido" placeholder="Ingrese el apellido">
+              <div class="error-message" *ngIf="enfermeraForm.get('apellido')?.invalid && enfermeraForm.get('apellido')?.touched">
+                {{ getErrorMessage('apellido') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email" class="form-label required">Email</label>
+              <input type="email" class="form-control" id="email" formControlName="email" placeholder="Ingrese el email">
+              <div class="error-message" *ngIf="enfermeraForm.get('email')?.invalid && enfermeraForm.get('email')?.touched">
+                {{ getErrorMessage('email') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="tel" class="form-control" id="telefono" formControlName="telefono" placeholder="Ingrese el teléfono (opcional)">
+              <div class="error-message" *ngIf="enfermeraForm.get('telefono')?.invalid && enfermeraForm.get('telefono')?.touched">
+                {{ getErrorMessage('telefono') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="numero_licencia" class="form-label required">Número de Licencia</label>
+              <input type="text" class="form-control" id="numero_licencia" formControlName="numero_licencia" placeholder="Ingrese el número de licencia">
+              <div class="error-message" *ngIf="enfermeraForm.get('numero_licencia')?.invalid && enfermeraForm.get('numero_licencia')?.touched">
+                {{ getErrorMessage('numero_licencia') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="turno" class="form-label required">Turno</label>
+              <select class="form-select" id="turno" formControlName="turno">
+                <option value="">Seleccione un turno</option>
+                <option value="mañana">Mañana</option>
+                <option value="tarde">Tarde</option>
+                <option value="noche">Noche</option>
+              </select>
+              <div class="error-message" *ngIf="enfermeraForm.get('turno')?.invalid && enfermeraForm.get('turno')?.touched">
+                {{ getErrorMessage('turno') }}
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="saveEnfermera()">{{ editingEnfermera ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
