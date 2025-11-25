@@ -1,7 +1,7 @@
 {
   "name": "frontend-angular-clean-architecture",
   "version": "1.0.0",
-  "description": "Frontend Angular con arquitectura limpia para integración con API FastAPI",
+  "description": "Frontend Angular para sistema hospitalario",
   "scripts": {
     "ng": "ng",
     "start": "node start-dev.js",

@@ -28,6 +28,51 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'pacientes',
+    loadComponent: () => import('./features/paciente/paciente-list/paciente-list.component').then(m => m.PacienteListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'medicos',
+    loadComponent: () => import('./features/medico/medico-list/medico-list.component').then(m => m.MedicoListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'enfermeras',
+    loadComponent: () => import('./features/enfermera/enfermera-list/enfermera-list.component').then(m => m.EnfermeraListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'citas',
+    loadComponent: () => import('./features/cita/cita-list/cita-list.component').then(m => m.CitaListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'hospitalizaciones',
+    loadComponent: () => import('./features/hospitalizacion/hospitalizacion-list/hospitalizacion-list.component').then(m => m.HospitalizacionListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'historiales-medicos',
+    loadComponent: () => import('./features/historial-medico/historial-medico-list/historial-medico-list.component').then(m => m.HistorialMedicoListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'historiales-entrada',
+    loadComponent: () => import('./features/historial-entrada/historial-entrada-list/historial-entrada-list.component').then(m => m.HistorialEntradaListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'facturas',
+    loadComponent: () => import('./features/factura/factura-list/factura-list.component').then(m => m.FacturaListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'facturas-detalle',
+    loadComponent: () => import('./features/factura-detalle/factura-detalle-list/factura-detalle-list.component').then(m => m.FacturaDetalleListComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes)
   },

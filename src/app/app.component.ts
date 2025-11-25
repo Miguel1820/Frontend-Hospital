@@ -9,9 +9,7 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
   imports: [CommonModule, RouterOutlet, RouterModule, SidebarComponent],
   template: `
     <div class="wrapper">
-      <div class="sidebar" data-color="red">
-        <app-sidebar></app-sidebar>
-      </div>
+      <app-sidebar></app-sidebar>
       <div class="main-panel">
         <div class="content">
           <router-outlet></router-outlet>
@@ -22,52 +20,38 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
   styles: [`
     .wrapper {
       display: flex;
+      flex-direction: column;
       min-height: 100vh;
-    }
-
-    .sidebar {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 1000;
-      width: 260px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
-    }
-
-    .sidebar[data-color="red"] {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     }
 
     .main-panel {
       flex: 1;
-      margin-left: 260px;
+      margin-right: 0;
       background: #f8f9fa;
       min-height: 100vh;
+      transition: margin-right 0.3s ease;
     }
 
     .content {
       padding: 0;
     }
 
+    // Ajustar margen cuando el sidebar está abierto
+    :host-context(.sidebar-open) .main-panel {
+      margin-right: 280px;
+    }
+
     @media (max-width: 991px) {
-      .sidebar {
-        transform: translate3d(-260px, 0, 0);
-        transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
-      }
-      
-      .sidebar.show {
-        transform: translate3d(0, 0, 0);
-      }
-      
       .main-panel {
-        margin-left: 0;
+        margin-right: 0;
+      }
+
+      :host-context(.sidebar-open) .main-panel {
+        margin-right: 0;
       }
     }
   `]
 })
 export class AppComponent {
-  title = 'frontend-angular-clean-architecture';
+  title = 'Sistema Hospitalario';
 }
