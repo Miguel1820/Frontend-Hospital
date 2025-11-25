@@ -27,6 +27,20 @@
             >
           </div>
           <div class="col-md-2">
+            <div class="form-check mt-2">
+              <input 
+                type="checkbox" 
+                class="form-check-input" 
+                id="includeInactive"
+                [(ngModel)]="includeInactive"
+                (change)="onFilterChange()"
+              >
+              <label class="form-check-label" for="includeInactive">
+                Incluir Inactivos
+              </label>
+            </div>
+          </div>
+          <div class="col-md-2">
             <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
           </div>
         </div>
@@ -65,7 +79,30 @@
               </td>
               <td>
                 <button class="btn btn-sm btn-primary" (click)="editPaciente(paciente)">Editar</button>
-                <button class="btn btn-sm btn-danger" (click)="deletePaciente(paciente)">Eliminar</button>
+                <button 
+                  *ngIf="paciente.activo" 
+                  class="btn btn-sm btn-warning" 
+                  (click)="inactivarPaciente(paciente)"
+                  title="Inactivar paciente"
+                >
+                  Inactivar
+                </button>
+                <button 
+                  *ngIf="!paciente.activo" 
+                  class="btn btn-sm btn-success" 
+                  (click)="reactivarPaciente(paciente)"
+                  title="Reactivar paciente"
+                >
+                  Reactivar
+                </button>
+                <button 
+                  *ngIf="!paciente.activo" 
+                  class="btn btn-sm btn-danger" 
+                  (click)="eliminarPacientePermanente(paciente)"
+                  title="Eliminar permanentemente"
+                >
+                  Eliminar
+                </button>
               </td>
             </tr>
           </tbody>

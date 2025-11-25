@@ -21,6 +21,7 @@ export class EnfermeraListComponent implements OnInit {
   totalPages = 1;
   pageSize = 10;
   filters: EnfermeraFilters = {};
+  includeInactive = false;
   showModal = false;
   editingEnfermera: Enfermera | null = null;
   enfermeraForm!: FormGroup;
@@ -55,7 +56,7 @@ export class EnfermeraListComponent implements OnInit {
       limit: this.pageSize
     };
 
-    this.enfermeraService.getEnfermeras(pagination, this.filters).subscribe({
+    this.enfermeraService.getEnfermeras(pagination, this.filters, this.includeInactive).subscribe({
       next: (response) => {
         this.enfermeras = response.data || [];
         this.totalPages = response.totalPages || 1;
@@ -76,6 +77,7 @@ export class EnfermeraListComponent implements OnInit {
 
   clearFilters(): void {
     this.filters = {};
+    this.includeInactive = false;
     this.currentPage = 1;
     this.loadEnfermeras();
   }
@@ -215,35 +217,55 @@ export class EnfermeraListComponent implements OnInit {
     }
   }
 
-  deleteEnfermera(enfermera: Enfermera): void {
-    if (confirm(`¿Está seguro de eliminar la enfermera "${enfermera.nombre} ${enfermera.apellido}"?`)) {
-      this.enfermeraService.deleteEnfermera(enfermera.id).subscribe({
-        next: (response) => {
-          console.log('Enfermera eliminada exitosamente:', response);
+  inactivarEnfermera(enfermera: Enfermera): void {
+    if (confirm(`¿Está seguro de inactivar la enfermera "${enfermera.nombre} ${enfermera.apellido}"?`)) {
+      this.enfermeraService.inactivarEnfermera(enfermera.id).subscribe({
+        next: () => {
           this.loadEnfermeras();
-          alert('Enfermera eliminada exitosamente');
+          alert('Enfermera inactivada exitosamente');
         },
         error: (error) => {
-          console.error('Error al eliminar enfermera:', error);
-          let errorMessage = 'Error al eliminar la enfermera';
-          if (error.error) {
-            if (typeof error.error === 'string') {
-              errorMessage += ': ' + error.error;
-            } else if (error.error.detail) {
-              if (typeof error.error.detail === 'string') {
-                errorMessage += ': ' + error.error.detail;
-              } else if (Array.isArray(error.error.detail)) {
-                errorMessage += ': ' + error.error.detail.map((e: any) => e.msg || e.message || JSON.stringify(e)).join(', ');
-              }
-            } else if (error.error.message) {
-              errorMessage += ': ' + error.error.message;
-            }
-          } else if (error.message) {
-            errorMessage += ': ' + error.message;
-          }
-          alert(errorMessage);
+          console.error('Error al inactivar enfermera:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al inactivar enfermera: ' + errorMessage);
         }
       });
     }
+  }
+
+  reactivarEnfermera(enfermera: Enfermera): void {
+    if (confirm(`¿Está seguro de reactivar la enfermera "${enfermera.nombre} ${enfermera.apellido}"?`)) {
+      this.enfermeraService.reactivarEnfermera(enfermera.id).subscribe({
+        next: () => {
+          this.loadEnfermeras();
+          alert('Enfermera reactivada exitosamente');
+        },
+        error: (error) => {
+          console.error('Error al reactivar enfermera:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al reactivar enfermera: ' + errorMessage);
+        }
+      });
+    }
+  }
+
+  eliminarEnfermeraPermanente(enfermera: Enfermera): void {
+    if (confirm(`¿Está seguro de eliminar PERMANENTEMENTE la enfermera "${enfermera.nombre} ${enfermera.apellido}"? Esta acción no se puede deshacer.`)) {
+      this.enfermeraService.eliminarEnfermeraPermanente(enfermera.id).subscribe({
+        next: () => {
+          this.loadEnfermeras();
+          alert('Enfermera eliminada permanentemente');
+        },
+        error: (error) => {
+          console.error('Error al eliminar enfermera:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al eliminar enfermera: ' + errorMessage);
+        }
+      });
+    }
+  }
+
+  deleteEnfermera(enfermera: Enfermera): void {
+    this.inactivarEnfermera(enfermera);
   }
 }

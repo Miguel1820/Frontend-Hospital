@@ -21,6 +21,7 @@ export class PacienteListComponent implements OnInit {
   totalPages = 1;
   pageSize = 10;
   filters: PacienteFilters = {};
+  includeInactive = false;
   showModal = false;
   editingPaciente: Paciente | null = null;
   pacienteForm!: FormGroup;
@@ -55,7 +56,7 @@ export class PacienteListComponent implements OnInit {
       limit: this.pageSize
     };
 
-    this.pacienteService.getPacientes(pagination, this.filters).subscribe({
+    this.pacienteService.getPacientes(pagination, this.filters, this.includeInactive).subscribe({
       next: (response) => {
         this.pacientes = response.data || [];
         this.totalPages = response.totalPages || 1;
@@ -76,6 +77,7 @@ export class PacienteListComponent implements OnInit {
 
   clearFilters(): void {
     this.filters = {};
+    this.includeInactive = false;
     this.currentPage = 1;
     this.loadPacientes();
   }
@@ -216,17 +218,55 @@ export class PacienteListComponent implements OnInit {
     }
   }
 
-  deletePaciente(paciente: Paciente): void {
-    if (confirm(`¿Está seguro de eliminar el paciente "${paciente.nombre} ${paciente.apellido}"?`)) {
-      this.pacienteService.deletePaciente(paciente.id).subscribe({
+  inactivarPaciente(paciente: Paciente): void {
+    if (confirm(`¿Está seguro de inactivar el paciente "${paciente.nombre} ${paciente.apellido}"?`)) {
+      this.pacienteService.inactivarPaciente(paciente.id).subscribe({
         next: () => {
           this.loadPacientes();
+          alert('Paciente inactivado exitosamente');
         },
         error: (error) => {
-          console.error('Error al eliminar paciente:', error);
-          alert('Error al eliminar el paciente');
+          console.error('Error al inactivar paciente:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al inactivar paciente: ' + errorMessage);
         }
       });
     }
+  }
+
+  reactivarPaciente(paciente: Paciente): void {
+    if (confirm(`¿Está seguro de reactivar el paciente "${paciente.nombre} ${paciente.apellido}"?`)) {
+      this.pacienteService.reactivarPaciente(paciente.id).subscribe({
+        next: () => {
+          this.loadPacientes();
+          alert('Paciente reactivado exitosamente');
+        },
+        error: (error) => {
+          console.error('Error al reactivar paciente:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al reactivar paciente: ' + errorMessage);
+        }
+      });
+    }
+  }
+
+  eliminarPacientePermanente(paciente: Paciente): void {
+    if (confirm(`¿Está seguro de eliminar PERMANENTEMENTE el paciente "${paciente.nombre} ${paciente.apellido}"? Esta acción no se puede deshacer.`)) {
+      this.pacienteService.eliminarPacientePermanente(paciente.id).subscribe({
+        next: () => {
+          this.loadPacientes();
+          alert('Paciente eliminado permanentemente');
+        },
+        error: (error) => {
+          console.error('Error al eliminar paciente:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al eliminar paciente: ' + errorMessage);
+        }
+      });
+    }
+  }
+
+  deletePaciente(paciente: Paciente): void {
+    this.inactivarPaciente(paciente);
   }
 }

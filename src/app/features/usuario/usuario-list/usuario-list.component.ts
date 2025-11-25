@@ -22,6 +22,7 @@ export class UsuarioListComponent implements OnInit {
   pageSize = 10;
   
   filters: UsuarioFilters = {};
+  includeInactive = false;
   
   // Modal properties
   showModal = false;
@@ -41,7 +42,7 @@ export class UsuarioListComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100)]],
       nombre_usuario: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       email: ['', [Validators.required, emailValidator()]],
-      contrasena: ['', [Validators.minLength(6)]],
+      contrasena: ['', [Validators.required, Validators.minLength(8)]],
       telefono: ['', [phoneValidator()]],
       es_admin: [false]
     });
@@ -58,7 +59,16 @@ export class UsuarioListComponent implements OnInit {
       limit: this.pageSize
     };
 
-    this.usuarioService.getUsuarios(pagination, this.filters).subscribe({
+    // Limpiar filtros vacíos antes de enviar
+    const cleanFilters: UsuarioFilters = {};
+    if (this.filters.email && this.filters.email.trim() !== '') {
+      cleanFilters.email = this.filters.email.trim();
+    }
+    if (this.filters.nombre && this.filters.nombre.trim() !== '') {
+      cleanFilters.nombre = this.filters.nombre.trim();
+    }
+
+    this.usuarioService.getUsuarios(pagination, Object.keys(cleanFilters).length > 0 ? cleanFilters : undefined, this.includeInactive).subscribe({
       next: (response) => {
         this.usuarios = response.data || [];
         this.totalPages = response.totalPages || 1;
@@ -66,7 +76,8 @@ export class UsuarioListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar usuarios:', error);
-        alert('Error al cargar usuarios: ' + (error.error?.detail || error.message || 'Error desconocido'));
+        const errorMessage = error.error?.detail || error.error?.message || error.message || 'Error desconocido';
+        alert('Error al cargar usuarios: ' + errorMessage);
         this.loading = false;
       }
     });
@@ -79,6 +90,7 @@ export class UsuarioListComponent implements OnInit {
 
   clearFilters(): void {
     this.filters = {};
+    this.includeInactive = false;
     this.currentPage = 1;
     this.loadUsuarios();
   }
@@ -100,7 +112,7 @@ export class UsuarioListComponent implements OnInit {
       telefono: '',
       es_admin: false
     });
-    this.usuarioForm.get('contrasena')?.setValidators([Validators.required, Validators.minLength(6)]);
+    this.usuarioForm.get('contrasena')?.setValidators([Validators.required, Validators.minLength(8)]);
     this.usuarioForm.get('contrasena')?.updateValueAndValidity();
     this.showModal = true;
   }
@@ -169,7 +181,26 @@ export class UsuarioListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al actualizar usuario:', error);
-          alert('Error al actualizar el usuario: ' + (error.error?.detail || error.message));
+          let errorMessage = 'Error al actualizar el usuario';
+          
+          if (error.error?.detail) {
+            const detail = error.error.detail;
+            if (typeof detail === 'string') {
+              errorMessage = detail;
+            } else if (detail.message) {
+              errorMessage = detail.message;
+            } else if (detail.error_type && detail.message) {
+              errorMessage = `${detail.error_type}: ${detail.message}`;
+            } else {
+              errorMessage = JSON.stringify(detail);
+            }
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          alert(errorMessage);
         }
       });
     } else {
@@ -190,20 +221,75 @@ export class UsuarioListComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al crear usuario:', error);
-          alert('Error al crear el usuario: ' + (error.error?.detail || error.message));
+          let errorMessage = 'Error al crear el usuario';
+          
+          if (error.error?.detail) {
+            const detail = error.error.detail;
+            if (typeof detail === 'string') {
+              errorMessage = detail;
+            } else if (detail.message) {
+              errorMessage = detail.message;
+            } else if (detail.error_type && detail.message) {
+              errorMessage = `${detail.error_type}: ${detail.message}`;
+            } else {
+              errorMessage = JSON.stringify(detail);
+            }
+          } else if (error.error?.message) {
+            errorMessage = error.error.message;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
+          alert(errorMessage);
         }
       });
     }
   }
 
-  deleteUsuario(usuario: Usuario): void {
-    if (confirm(`¿Está seguro de eliminar el usuario "${usuario.email}"?`)) {
+  inactivarUsuario(usuario: Usuario): void {
+    if (confirm(`¿Está seguro de inactivar el usuario "${usuario.email}"?`)) {
       const usuarioId = String(usuario.id);
-      this.usuarioService.deleteUsuario(usuarioId).subscribe({
+      this.usuarioService.inactivarUsuario(usuarioId).subscribe({
         next: (response) => {
-          console.log('Usuario eliminado exitosamente:', response);
+          console.log('Usuario inactivado exitosamente:', response);
           this.loadUsuarios();
-          alert('Usuario eliminado exitosamente');
+          alert('Usuario inactivado exitosamente');
+        },
+        error: (error) => {
+          console.error('Error al inactivar usuario:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido al inactivar usuario';
+          alert('Error al inactivar usuario: ' + errorMessage);
+        }
+      });
+    }
+  }
+
+  reactivarUsuario(usuario: Usuario): void {
+    if (confirm(`¿Está seguro de reactivar el usuario "${usuario.email}"?`)) {
+      const usuarioId = String(usuario.id);
+      this.usuarioService.reactivarUsuario(usuarioId).subscribe({
+        next: (response) => {
+          console.log('Usuario reactivado exitosamente:', response);
+          this.loadUsuarios();
+          alert('Usuario reactivado exitosamente');
+        },
+        error: (error) => {
+          console.error('Error al reactivar usuario:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido al reactivar usuario';
+          alert('Error al reactivar usuario: ' + errorMessage);
+        }
+      });
+    }
+  }
+
+  eliminarUsuarioPermanente(usuario: Usuario): void {
+    if (confirm(`¿Está seguro de eliminar PERMANENTEMENTE el usuario "${usuario.email}"? Esta acción no se puede deshacer.`)) {
+      const usuarioId = String(usuario.id);
+      this.usuarioService.eliminarUsuarioPermanente(usuarioId).subscribe({
+        next: (response) => {
+          console.log('Usuario eliminado permanentemente:', response);
+          this.loadUsuarios();
+          alert('Usuario eliminado permanentemente');
         },
         error: (error) => {
           console.error('Error al eliminar usuario:', error);
@@ -212,5 +298,9 @@ export class UsuarioListComponent implements OnInit {
         }
       });
     }
+  }
+
+  deleteUsuario(usuario: Usuario): void {
+    this.inactivarUsuario(usuario);
   }
 }

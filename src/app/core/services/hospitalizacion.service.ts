@@ -12,10 +12,11 @@ export class HospitalizacionService {
 
   constructor(private apiService: ApiService) { }
 
-  getHospitalizaciones(pagination: PaginationParams, filters?: HospitalizacionFilters): Observable<PaginatedResponse<Hospitalizacion>> {
+  getHospitalizaciones(pagination: PaginationParams, filters?: HospitalizacionFilters, includeInactive: boolean = false): Observable<PaginatedResponse<Hospitalizacion>> {
     const params: any = {
       skip: (pagination.page - 1) * pagination.limit,
-      limit: pagination.limit
+      limit: pagination.limit,
+      include_inactive: includeInactive
     };
     if (filters) {
       Object.assign(params, filters);

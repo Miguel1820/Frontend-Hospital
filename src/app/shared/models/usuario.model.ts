@@ -56,7 +56,7 @@ export interface UsuarioFilters {
   email?: string;
   nombre?: string;
   apellido?: string;
-  activo?: boolean;
+  activo?: boolean | string;
   fecha_desde?: string;
   fecha_hasta?: string;
 }

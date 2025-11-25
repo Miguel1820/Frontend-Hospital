@@ -25,83 +25,66 @@
   }
 }
 
-// Botón toggle en el borde derecho
+// Botón toggle en la parte superior
 .sidebar-toggle {
   position: fixed;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  width: 52px;
-  height: 90px;
+  top: 10px;
+  right: 10px;
+  width: 50px;
+  height: 50px;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border: 2px solid #10b981;
-  border-right: none;
-  border-radius: 16px 0 0 16px;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
-  z-index: 1001;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 26px;
-  transition: all 0.4s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
-  // Icono grande y claro (3 líneas = menú)
-  &::before {
-    content: "\f0c9";                    /* Font Awesome bars (menú) */
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
-    color: #10b981;
-  }
-
-  //luz suave al pasar el ratón
   &:hover {
-    width: 56px;
     background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    box-shadow: 
-      0 6px 20px rgba(0, 0, 0, 0.35),
-      0 0 20px rgba(16, 185, 129, 0.18);   /* ← brillo verde muy suave */
-    border-color: #34d399;                 /* borde un poco más claro al hover */
-    transform: translateY(-50%) translateX(-2px);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
   }
 
-  /* Pequeña animación de pulso muy sutil cuando pasas el mouse */
-  &:hover::after {
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-    70%  { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-  }
-
-  // CUANDO EL SIDEBAR ESTÁ ABIERTO → EL BOTÓN SE DESPLAZA 280px A LA IZQUIERDA
   .right-sidebar.open ~ &,
   &.active {
-    right: 280px !important;     // ← ESTA LÍNEA ES LA CLAVE
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
   }
 
-  .right-sidebar.open ~ &::before,
-  &.active::before {
-    content: "\f060";
-    color: #60a5fa;
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 24px;
+    height: 18px;
+    justify-content: space-between;
   }
 
-  // Pequeño puntito verde para más estilo
-  &::after {
-    content: "";
-    position: absolute;
-    top: 12px;
-    right: 10px;
-    width: 8px;
-    height: 8px;
-    background: #10b981;
-    border-radius: 50%;
-    box-shadow: 0 0 15px #10b981;
-    opacity: 0.6;
+  .hamburger-line {
+    width: 100%;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+
+    &.active {
+      &:nth-child(1) {
+        transform: rotate(45deg) translate(6px, 6px);
+      }
+
+      &:nth-child(2) {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+
+      &:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+      }
+    }
   }
 }
 
@@ -169,14 +152,27 @@
     background: transparent;
     border: none;
     color: white;
-    font-size: 20px;
     cursor: pointer;
-    padding: 5px;
+    padding: 8px;
     border-radius: 4px;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 
     &:hover {
       background: rgba(255, 255, 255, 0.1);
+    }
+
+    .close-icon {
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1;
+      display: block;
+      transform: translateY(-1px);
     }
   }
 }
@@ -225,7 +221,6 @@
   a {
     display: flex;
     align-items: center;
-    gap: 12px;
     padding: 12px 20px;
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
@@ -233,13 +228,6 @@
     font-weight: 500;
     transition: all 0.3s ease;
     white-space: nowrap;
-
-    i {
-      font-size: 18px;
-      width: 20px;
-      text-align: center;
-      flex-shrink: 0;
-    }
 
     span {
       flex: 1;
@@ -331,10 +319,19 @@
   justify-content: center;
   flex-shrink: 0;
 
-  i {
+  .user-initial {
     color: white;
     font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
   }
+}
+
+.dropdown-arrow {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
 }
 
 .user-text {
@@ -390,7 +387,6 @@
 .dropdown-item {
   display: flex;
   align-items: center;
-  gap: 10px;
   padding: 12px 16px;
   color: #0f172a;
   text-decoration: none;
@@ -398,10 +394,8 @@
   transition: all 0.3s ease;
   cursor: pointer;
 
-  i {
-    font-size: 16px;
-    width: 20px;
-    text-align: center;
+  span {
+    flex: 1;
   }
 
   &:hover {

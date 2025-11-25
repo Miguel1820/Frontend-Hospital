@@ -16,14 +16,29 @@ export class UsuarioService {
   /**
    * Obtiene todos los usuarios con paginación
    */
-  getUsuarios(pagination: PaginationParams, filters?: UsuarioFilters): Observable<PaginatedResponse<Usuario>> {
+  getUsuarios(pagination: PaginationParams, filters?: UsuarioFilters, includeInactive: boolean = false): Observable<PaginatedResponse<Usuario>> {
     const params: any = {
       skip: (pagination.page - 1) * pagination.limit,
-      limit: pagination.limit
+      limit: pagination.limit,
+      include_inactive: includeInactive
     };
+    
     if (filters) {
-      Object.assign(params, filters);
+      if (filters.email) {
+        params.email = filters.email;
+      }
+      if (filters.nombre) {
+        params.nombre = filters.nombre;
+      }
+      if (filters.activo !== undefined && filters.activo !== null) {
+        if (typeof filters.activo === 'string' && filters.activo !== '') {
+          params.activo = filters.activo === 'true';
+        } else if (typeof filters.activo === 'boolean') {
+          params.activo = filters.activo;
+        }
+      }
     }
+    
     return this.apiService.get<Usuario[]>(this.endpoint, params).pipe(
       map(response => {
         const items = Array.isArray(response) ? response : (response?.data || []);
@@ -61,10 +76,31 @@ export class UsuarioService {
   }
 
   /**
-   * Elimina un usuario
+   * Inactiva un usuario (soft delete)
+   */
+  inactivarUsuario(id: string | number): Observable<ApiResponse<void>> {
+    return this.apiService.patch<void>(`${this.endpoint}/${id}/inactivar`, {});
+  }
+
+  /**
+   * Reactiva un usuario inactivo
+   */
+  reactivarUsuario(id: string | number): Observable<ApiResponse<void>> {
+    return this.apiService.patch<void>(`${this.endpoint}/${id}/reactivar`, {});
+  }
+
+  /**
+   * Elimina un usuario permanentemente de la base de datos
+   */
+  eliminarUsuarioPermanente(id: string | number): Observable<ApiResponse<void>> {
+    return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+  }
+
+  /**
+   * Elimina un usuario (soft delete) - mantiene compatibilidad
    */
   deleteUsuario(id: string | number): Observable<ApiResponse<void>> {
-    return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+    return this.inactivarUsuario(id);
   }
 
   /**
