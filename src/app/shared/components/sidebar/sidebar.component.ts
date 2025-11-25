@@ -45,7 +45,12 @@ export class SidebarComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.menuItems = ROUTES.filter(menuItem => this.canAccessMenuItem(menuItem));
+    try {
+      this.menuItems = ROUTES.filter(menuItem => this.canAccessMenuItem(menuItem));
+    } catch (error) {
+      console.error('Error en SidebarComponent ngOnInit:', error);
+      this.menuItems = [];
+    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -110,25 +115,30 @@ export class SidebarComponent implements OnInit {
   }
 
   canAccessMenuItem(menuItem: RouteInfo): boolean {
-    const userRole = this.authService.getUserRole();
-    
-    if (!userRole) return false;
+    try {
+      const userRole = this.authService.getUserRole();
+      
+      if (!userRole) return false;
 
-    // Admin puede acceder a todo
-    if (userRole === 'admin') return true;
+      // Admin puede acceder a todo
+      if (userRole === 'admin') return true;
 
-    // Si no tiene roles definidos, todos pueden acceder (excepto si es consumidor)
-    if (!menuItem.roles || menuItem.roles.length === 0) {
-      // Consumidor solo puede acceder a rutas específicas
-      if (userRole === 'consumidor') {
-        const allowedRoutes = ['/dashboard', '/citas', '/facturas', '/historiales-medicos'];
-        return allowedRoutes.includes(menuItem.path);
+      // Si no tiene roles definidos, todos pueden acceder (excepto si es consumidor)
+      if (!menuItem.roles || menuItem.roles.length === 0) {
+        // Consumidor solo puede acceder a rutas específicas
+        if (userRole === 'consumidor') {
+          const allowedRoutes = ['/dashboard', '/citas', '/facturas', '/historiales-medicos'];
+          return allowedRoutes.includes(menuItem.path);
+        }
+        return true;
       }
-      return true;
-    }
 
-    // Verificar si el usuario actual tiene alguno de los roles requeridos
-    return menuItem.roles.includes(userRole);
+      // Verificar si el usuario actual tiene alguno de los roles requeridos
+      return menuItem.roles.includes(userRole);
+    } catch (error) {
+      console.error('Error en canAccessMenuItem:', error);
+      return false;
+    }
   }
 
   logout() {

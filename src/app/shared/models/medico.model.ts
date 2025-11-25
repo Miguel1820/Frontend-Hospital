@@ -46,5 +46,6 @@ export interface UpdateMedicoRequest {
 export interface MedicoFilters {
   nombre?: string;
   especialidad?: string;
+  activo?: boolean | string;
 }
 

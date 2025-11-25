@@ -12,11 +12,12 @@ export class CitaService {
 
   constructor(private apiService: ApiService) { }
 
-  getCitas(pagination: PaginationParams, filters?: CitaFilters): Observable<PaginatedResponse<Cita>> {
+  getCitas(pagination: PaginationParams, filters?: CitaFilters, includeInactive: boolean = false): Observable<PaginatedResponse<Cita>> {
     let endpoint = this.endpoint;
     const params: any = {
       skip: (pagination.page - 1) * pagination.limit,
-      limit: pagination.limit
+      limit: pagination.limit,
+      include_inactive: includeInactive
     };
 
     if (filters) {

@@ -17,8 +17,14 @@ export class ApiService {
     let httpParams = new HttpParams();
     if (params) {
       Object.keys(params).forEach(key => {
-        if (params[key] !== null && params[key] !== undefined) {
-          httpParams = httpParams.set(key, params[key].toString());
+        const value = params[key];
+        if (value !== null && value !== undefined && value !== '') {
+          // Manejar booleanos correctamente
+          if (typeof value === 'boolean') {
+            httpParams = httpParams.set(key, value.toString());
+          } else {
+            httpParams = httpParams.set(key, value.toString());
+          }
         }
       });
     }

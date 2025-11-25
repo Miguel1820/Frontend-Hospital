@@ -35,5 +35,6 @@ export interface UpdateEnfermeraRequest {
 export interface EnfermeraFilters {
   nombre?: string;
   turno?: string;
+  activo?: boolean | string;
 }
 

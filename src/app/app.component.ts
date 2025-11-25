@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 
 @Component({
@@ -9,8 +10,8 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
   imports: [CommonModule, RouterOutlet, RouterModule, SidebarComponent],
   template: `
     <div class="wrapper">
-      <app-sidebar></app-sidebar>
-      <div class="main-panel">
+      <app-sidebar *ngIf="isAuthenticated"></app-sidebar>
+      <div class="main-panel" [class.no-sidebar]="!isAuthenticated">
         <div class="content">
           <router-outlet></router-outlet>
         </div>
@@ -36,6 +37,10 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
       padding: 0;
     }
 
+    .main-panel.no-sidebar {
+      margin-right: 0 !important;
+    }
+
     // Ajustar margen cuando el sidebar está abierto
     :host-context(.sidebar-open) .main-panel {
       margin-right: 280px;
@@ -52,6 +57,24 @@ import { SidebarComponent } from './shared/components/sidebar/sidebar.component'
     }
   `]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Sistema Hospitalario';
+  isAuthenticated = false;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    try {
+      this.isAuthenticated = this.authService.isAuthenticated();
+      this.authService.currentUser$.subscribe(() => {
+        this.isAuthenticated = this.authService.isAuthenticated();
+      });
+    } catch (error) {
+      console.error('Error en AppComponent ngOnInit:', error);
+      this.isAuthenticated = false;
+    }
+  }
 }

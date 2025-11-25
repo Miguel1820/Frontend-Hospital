@@ -1,7 +1,10 @@
-<!-- Botón toggle en el borde derecho -->
+<!-- Botón toggle en el borde superior -->
 <button class="sidebar-toggle" (click)="toggleSidebar()" [class.active]="isSidebarOpen">
-  <i class="now-ui-icons arrows-1_minimal-left" *ngIf="!isSidebarOpen"></i>
-  <i class="now-ui-icons arrows-1_minimal-right" *ngIf="isSidebarOpen"></i>
+  <span class="hamburger">
+    <span class="hamburger-line" [class.active]="isSidebarOpen"></span>
+    <span class="hamburger-line" [class.active]="isSidebarOpen"></span>
+    <span class="hamburger-line" [class.active]="isSidebarOpen"></span>
+  </span>
 </button>
 
 <!-- Sidebar derecho -->
@@ -17,7 +20,7 @@
         <img src="assets/imagenes/logo_empresa.png" alt="Logo">
       </div>
       <a href="#" class="simple-text logo-normal">
-            HOSPITAL LOS ENA-NOS
+            Sistema Hospitalario
             <small>SISTEMA DE GESTIÓN</small>
       </a>
     </div>

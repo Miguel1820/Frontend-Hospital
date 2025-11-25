@@ -21,6 +21,7 @@ export class MedicoListComponent implements OnInit {
   totalPages = 1;
   pageSize = 10;
   filters: MedicoFilters = {};
+  includeInactive = false;
   showModal = false;
   editingMedico: Medico | null = null;
   medicoForm!: FormGroup;
@@ -58,7 +59,7 @@ export class MedicoListComponent implements OnInit {
       limit: this.pageSize
     };
 
-    this.medicoService.getMedicos(pagination, this.filters).subscribe({
+    this.medicoService.getMedicos(pagination, this.filters, this.includeInactive).subscribe({
       next: (response) => {
         this.medicos = response.data || [];
         this.totalPages = response.totalPages || 1;
@@ -91,6 +92,7 @@ export class MedicoListComponent implements OnInit {
 
   clearFilters(): void {
     this.filters = {};
+    this.includeInactive = false;
     this.currentPage = 1;
     this.loadMedicos();
   }
@@ -257,17 +259,55 @@ export class MedicoListComponent implements OnInit {
     }
   }
 
-  deleteMedico(medico: Medico): void {
-    if (confirm(`¿Está seguro de eliminar el médico "${medico.nombre} ${medico.apellido}"?`)) {
-      this.medicoService.deleteMedico(medico.id).subscribe({
+  inactivarMedico(medico: Medico): void {
+    if (confirm(`¿Está seguro de inactivar el médico "${medico.nombre} ${medico.apellido}"?`)) {
+      this.medicoService.inactivarMedico(medico.id).subscribe({
         next: () => {
           this.loadMedicos();
+          alert('Médico inactivado exitosamente');
         },
         error: (error) => {
-          console.error('Error al eliminar médico:', error);
-          alert('Error al eliminar el médico');
+          console.error('Error al inactivar médico:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al inactivar médico: ' + errorMessage);
         }
       });
     }
+  }
+
+  reactivarMedico(medico: Medico): void {
+    if (confirm(`¿Está seguro de reactivar el médico "${medico.nombre} ${medico.apellido}"?`)) {
+      this.medicoService.reactivarMedico(medico.id).subscribe({
+        next: () => {
+          this.loadMedicos();
+          alert('Médico reactivado exitosamente');
+        },
+        error: (error) => {
+          console.error('Error al reactivar médico:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al reactivar médico: ' + errorMessage);
+        }
+      });
+    }
+  }
+
+  eliminarMedicoPermanente(medico: Medico): void {
+    if (confirm(`¿Está seguro de eliminar PERMANENTEMENTE el médico "${medico.nombre} ${medico.apellido}"? Esta acción no se puede deshacer.`)) {
+      this.medicoService.eliminarMedicoPermanente(medico.id).subscribe({
+        next: () => {
+          this.loadMedicos();
+          alert('Médico eliminado permanentemente');
+        },
+        error: (error) => {
+          console.error('Error al eliminar médico:', error);
+          const errorMessage = error.error?.detail || error.error?.mensaje || error.message || 'Error desconocido';
+          alert('Error al eliminar médico: ' + errorMessage);
+        }
+      });
+    }
+  }
+
+  deleteMedico(medico: Medico): void {
+    this.inactivarMedico(medico);
   }
 }

@@ -12,14 +12,25 @@ export class MedicoService {
 
   constructor(private apiService: ApiService) { }
 
-  getMedicos(pagination: PaginationParams, filters?: MedicoFilters): Observable<PaginatedResponse<Medico>> {
+  getMedicos(pagination: PaginationParams, filters?: MedicoFilters, includeInactive: boolean = false): Observable<PaginatedResponse<Medico>> {
     const params: any = {
       skip: (pagination.page - 1) * pagination.limit,
-      limit: pagination.limit
+      limit: pagination.limit,
+      include_inactive: includeInactive
     };
+    
     if (filters) {
-      Object.assign(params, filters);
+      if (filters.nombre) {
+        params.nombre = filters.nombre;
+      }
+      if (filters.especialidad) {
+        params.especialidad = filters.especialidad;
+      }
+      if (filters.activo !== undefined && filters.activo !== null && filters.activo !== '') {
+        params.activo = filters.activo === 'true' || filters.activo === true;
+      }
     }
+    
     return this.apiService.get<Medico[]>(this.endpoint, params).pipe(
       map(response => {
         const items = Array.isArray(response) ? response : (response?.data || []);
@@ -47,8 +58,20 @@ export class MedicoService {
     return this.apiService.put<Medico>(`${this.endpoint}/${id}`, medico);
   }
 
-  deleteMedico(id: string): Observable<ApiResponse<void>> {
+  inactivarMedico(id: string): Observable<ApiResponse<void>> {
+    return this.apiService.patch<void>(`${this.endpoint}/${id}/inactivar`, {});
+  }
+
+  reactivarMedico(id: string): Observable<ApiResponse<void>> {
+    return this.apiService.patch<void>(`${this.endpoint}/${id}/reactivar`, {});
+  }
+
+  eliminarMedicoPermanente(id: string): Observable<ApiResponse<void>> {
     return this.apiService.delete<void>(`${this.endpoint}/${id}`);
+  }
+
+  deleteMedico(id: string): Observable<ApiResponse<void>> {
+    return this.inactivarMedico(id);
   }
 }
 

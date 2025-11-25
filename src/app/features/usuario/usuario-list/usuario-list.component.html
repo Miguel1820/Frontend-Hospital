@@ -30,15 +30,18 @@
             >
           </div>
           <div class="col-md-2">
-            <select 
-              class="form-control" 
-              [(ngModel)]="filters.activo"
-              (change)="onFilterChange()"
-            >
-              <option value="">Todos los estados</option>
-              <option value="true">Activos</option>
-              <option value="false">Inactivos</option>
-            </select>
+            <div class="form-check mt-2">
+              <input 
+                type="checkbox" 
+                class="form-check-input" 
+                id="includeInactive"
+                [(ngModel)]="includeInactive"
+                (change)="onFilterChange()"
+              >
+              <label class="form-check-label" for="includeInactive">
+                Incluir Inactivos
+              </label>
+            </div>
           </div>
           <div class="col-md-2">
             <button class="btn btn-secondary" (click)="clearFilters()">
@@ -88,7 +91,28 @@
                 <button class="btn btn-sm btn-primary" (click)="editUsuario(usuario)">
                   Editar
                 </button>
-                <button class="btn btn-sm btn-danger" (click)="deleteUsuario(usuario)">
+                <button 
+                  *ngIf="usuario.activo" 
+                  class="btn btn-sm btn-warning" 
+                  (click)="inactivarUsuario(usuario)"
+                  title="Inactivar usuario"
+                >
+                  Inactivar
+                </button>
+                <button 
+                  *ngIf="!usuario.activo" 
+                  class="btn btn-sm btn-success" 
+                  (click)="reactivarUsuario(usuario)"
+                  title="Reactivar usuario"
+                >
+                  Reactivar
+                </button>
+                <button 
+                  *ngIf="!usuario.activo" 
+                  class="btn btn-sm btn-danger" 
+                  (click)="eliminarUsuarioPermanente(usuario)"
+                  title="Eliminar permanentemente"
+                >
                   Eliminar
                 </button>
               </td>
@@ -178,7 +202,7 @@
                 class="form-control" 
                 id="contrasena" 
                 formControlName="contrasena"
-                placeholder="Ingrese la contraseña (mínimo 6 caracteres)"
+                placeholder="Mínimo 8 caracteres: mayúscula, minúscula, número y carácter especial"
               >
               <div class="error-message" *ngIf="usuarioForm.get('contrasena')?.invalid && usuarioForm.get('contrasena')?.touched">
                 {{ getErrorMessage('contrasena') }}
