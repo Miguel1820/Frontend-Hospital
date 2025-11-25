@@ -1,3 +1,49 @@
+/* Capa oscura sutil para que el texto se lea perfecto */
+.usuarios-page::before,
+.usuarios-container::before,
+app-usuarios::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.75);   /* azul-negro del sidebar */
+  backdrop-filter: blur(3px);
+  z-index: -1;
+}
+
+/* Asegura que todo el contenido esté por encima */
+.usuarios-container,
+.table-responsive,
+.card,
+.search-container {
+  position: relative;
+  z-index: 1;
+  background: rgba(15, 23, 42, 0.6) !important;
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Texto bien legible */
+h2, h3, .page-title, th, td, label, p, span, div {
+  color: rgb(0, 0, 0) !important;
+  
+}
+
+/* Cabecera de tabla más oscura para destacar */
+.table thead th {
+  background: rgba(15, 23, 42, 0.9) !important;
+  color: #60a5fa !important;
+  border-bottom: 2px solid #10b981 !important;
+}
+
+/* Hover en filas */
+.table tbody tr:hover {
+  background: rgba(16, 185, 129, 0.25) !important;
+}
+
 .badge {
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
@@ -12,6 +58,31 @@
 .badge-danger {
   background-color: #dc3545;
   color: white;
+}
+
+.table thead th {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  padding: 1.2rem 1rem !important;
+  border-bottom: 2px solid #10b981 !important;
+}
+
+/* Opcional: un toque más pro (borde inferior verde sutil) */
+.table thead {
+  border-bottom: none !important;
+}
+
+/* Si usas table-striped o table-dark, quítale el fondo claro */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(16, 185, 129, 0.15) !important;
 }
 
 .table-responsive {
@@ -46,6 +117,9 @@
   margin: 1.75rem auto;
   transform: translateY(-50%);
   top: 50%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-content {
@@ -53,6 +127,10 @@
   border-radius: 0.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   background-color: white;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
 }
 
 .modal-header {
@@ -83,6 +161,8 @@
 
 .modal-body {
   padding: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(90vh - 120px);
 }
 
 .modal-footer {

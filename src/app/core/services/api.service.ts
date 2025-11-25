@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiResponse, PaginatedResponse, PaginationParams } from '../models/api-response.model';
+import { PaginatedResponse, PaginationParams } from '../models/api-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,28 +12,30 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Realiza una petición GET
-   */
-  get<T>(endpoint: string, params?: any): Observable<ApiResponse<T>> {
+  // Realiza una petición GET
+  get<T>(endpoint: string, params?: any): Observable<any> {
     let httpParams = new HttpParams();
     if (params) {
       Object.keys(params).forEach(key => {
-        if (params[key] !== null && params[key] !== undefined) {
-          httpParams = httpParams.set(key, params[key].toString());
+        const value = params[key];
+        if (value !== null && value !== undefined && value !== '') {
+          // Manejar booleanos correctamente
+          if (typeof value === 'boolean') {
+            httpParams = httpParams.set(key, value.toString());
+          } else {
+            httpParams = httpParams.set(key, value.toString());
+          }
         }
       });
     }
-    return this.http.get<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, { params: httpParams });
+    return this.http.get<any>(`${this.baseUrl}${endpoint}`, { params: httpParams });
   }
 
-  /**
-   * Realiza una petición GET para obtener datos paginados
-   */
+  // Obtiene datos paginados
   getPaginated<T>(endpoint: string, pagination: PaginationParams, filters?: any): Observable<PaginatedResponse<T>> {
     let httpParams = new HttpParams();
     
-    // Agregar parámetros de paginación
+    // Parámetros de paginación
     httpParams = httpParams.set('page', pagination.page.toString());
     httpParams = httpParams.set('limit', pagination.limit.toString());
     
@@ -45,7 +47,7 @@ export class ApiService {
       httpParams = httpParams.set('order', pagination.order);
     }
 
-    // Agregar filtros
+    // Filtros
     if (filters) {
       Object.keys(filters).forEach(key => {
         if (filters[key] !== null && filters[key] !== undefined) {
@@ -57,31 +59,20 @@ export class ApiService {
     return this.http.get<PaginatedResponse<T>>(`${this.baseUrl}${endpoint}`, { params: httpParams });
   }
 
-  /**
-   * Realiza una petición POST
-   */
-  post<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
-    return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data);
+  // Realiza una petición POST
+  post<T>(endpoint: string, data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}${endpoint}`, data);
   }
 
-  /**
-   * Realiza una petición PUT
-   */
-  put<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
-    return this.http.put<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data);
+  put<T>(endpoint: string, data: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}${endpoint}`, data);
   }
 
-  /**
-   * Realiza una petición PATCH
-   */
-  patch<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
-    return this.http.patch<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data);
+  patch<T>(endpoint: string, data: any): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}${endpoint}`, data);
   }
 
-  /**
-   * Realiza una petición DELETE
-   */
-  delete<T>(endpoint: string): Observable<ApiResponse<T>> {
-    return this.http.delete<ApiResponse<T>>(`${this.baseUrl}${endpoint}`);
+  delete<T>(endpoint: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}${endpoint}`);
   }
 }

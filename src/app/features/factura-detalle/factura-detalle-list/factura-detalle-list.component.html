@@ -1,0 +1,141 @@
+<div class="factura-detalle-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Detalles de Factura</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nuevo Detalle</button>
+    </div>
+    
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <select 
+              class="form-control" 
+              [(ngModel)]="filters.factura_id"
+              (change)="onFilterChange()"
+            >
+              <option value="">Todas las facturas</option>
+              <option *ngFor="let factura of facturas" [value]="factura.id">
+                {{ factura.numero_factura }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Factura</th>
+              <th>Descripción</th>
+              <th>Cantidad</th>
+              <th>Precio Unitario</th>
+              <th>Subtotal</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="6" class="text-center">Cargando...</td>
+            </tr>
+            <tr *ngIf="!loading && detalles.length === 0">
+              <td colspan="6" class="text-center">No hay detalles de factura disponibles</td>
+            </tr>
+            <tr *ngFor="let detalle of detalles">
+              <td>{{ getFacturaNumero(detalle.factura_id) }}</td>
+              <td>{{ detalle.descripcion }}</td>
+              <td>{{ detalle.cantidad }}</td>
+              <td>${{ detalle.precio_unitario | number:'1.2-2' }}</td>
+              <td><strong>${{ detalle.subtotal | number:'1.2-2' }}</strong></td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="editDetalle(detalle)">Editar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteDetalle(detalle)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingDetalle ? 'Editar Detalle de Factura' : 'Nuevo Detalle de Factura' }}</h5>
+          <button type="button" class="close" (click)="closeModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="detalleForm" (ngSubmit)="saveDetalle()">
+            <div class="form-group">
+              <label for="factura_id" class="form-label required">Factura</label>
+              <select class="form-select" id="factura_id" formControlName="factura_id">
+                <option value="">Seleccione una factura</option>
+                <option *ngFor="let factura of facturas" [value]="factura.id">
+                  {{ factura.numero_factura }}
+                </option>
+              </select>
+              <div class="error-message" *ngIf="detalleForm.get('factura_id')?.invalid && detalleForm.get('factura_id')?.touched">
+                {{ getErrorMessage('factura_id') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="descripcion" class="form-label required">Descripción</label>
+              <input type="text" class="form-control" id="descripcion" formControlName="descripcion" placeholder="Ingrese la descripción">
+              <div class="error-message" *ngIf="detalleForm.get('descripcion')?.invalid && detalleForm.get('descripcion')?.touched">
+                {{ getErrorMessage('descripcion') }}
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="cantidad" class="form-label required">Cantidad</label>
+                  <input type="number" step="0.01" class="form-control" id="cantidad" formControlName="cantidad" placeholder="1">
+                  <div class="error-message" *ngIf="detalleForm.get('cantidad')?.invalid && detalleForm.get('cantidad')?.touched">
+                    {{ getErrorMessage('cantidad') }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="precio_unitario" class="form-label required">Precio Unitario</label>
+                  <input type="number" step="0.01" class="form-control" id="precio_unitario" formControlName="precio_unitario" placeholder="0.00">
+                  <div class="error-message" *ngIf="detalleForm.get('precio_unitario')?.invalid && detalleForm.get('precio_unitario')?.touched">
+                    {{ getErrorMessage('precio_unitario') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="subtotal" class="form-label">Subtotal</label>
+              <input type="number" step="0.01" class="form-control" id="subtotal" formControlName="subtotal" readonly>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="saveDetalle()">{{ editingDetalle ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

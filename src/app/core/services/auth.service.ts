@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { ApiResponse } from '../models/api-response.model';
 import { ApiService } from './api.service';
 
@@ -13,21 +13,25 @@ export interface LoginResponse {
   access_token: string;
   token_type: string;
   user: {
-    id: number;
+    id: string;
     email: string;
     nombre: string;
-    apellido: string;
+    nombre_usuario?: string;
+    apellido?: string;
     activo: boolean;
+    es_admin: boolean;
     rol: string;
   };
 }
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
   nombre: string;
-  apellido: string;
+  nombre_usuario?: string;
+  apellido?: string;
   activo: boolean;
+  es_admin?: boolean;
   rol: string;
 }
 
@@ -45,57 +49,75 @@ export class AuthService {
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private apiService: ApiService) {
-    this.loadUserFromStorage();
+    try {
+      this.loadUserFromStorage();
+    } catch (error) {
+      console.error('Error en constructor de AuthService:', error);
+      this.logout();
+    }
   }
 
   /**
-   * Inicia sesión del usuario (FAKE - Sin conexión al backend)
+   * Inicia sesión del usuario conectado al backend
    */
   login(credentials: LoginRequest): Observable<ApiResponse<LoginResponse>> {
-    // Simular delay de red
-    return of(this.fakeLogin(credentials)).pipe(delay(1000));
-  }
+    const loginPayload = {
+      nombre_usuario: credentials.email,
+      contraseña: credentials.password
+    };
 
-  /**
-   * Login falso con credenciales hardcodeadas y roles
-   */
-  private fakeLogin(credentials: LoginRequest): ApiResponse<LoginResponse> {
-    // Credenciales fijas con roles
-    const validCredentials = [
-      { email: 'admin', password: 'admin123', rol: 'admin' },
-      { email: 'consumidor', password: 'consumidor123', rol: 'consumidor' }
-    ];
+    return this.apiService.post<LoginResponse>('/auth/login', loginPayload).pipe(
+      map((response: LoginResponse) => {
+        const loginResponse: LoginResponse = {
+          access_token: response.access_token,
+          token_type: response.token_type,
+          user: {
+            id: response.user.id,
+            email: response.user.email,
+            nombre: response.user.nombre,
+            nombre_usuario: response.user.nombre_usuario,
+            apellido: response.user.apellido || '',
+            activo: response.user.activo,
+            es_admin: response.user.es_admin,
+            rol: response.user.es_admin ? 'admin' : 'consumidor'
+          }
+        };
 
-    const validCredential = validCredentials.find(
-      cred => cred.email === credentials.email && cred.password === credentials.password
+        return {
+          success: true,
+          message: 'Login exitoso',
+          data: loginResponse,
+          status: 200
+        };
+      }),
+      catchError((error) => {
+        console.error('Error completo en login:', error);
+        
+        let errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
+        
+        if (error.error) {
+          // Si es un objeto de error de FastAPI
+          if (typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.error.detail) {
+            // Detalle puede ser string o array
+            if (typeof error.error.detail === 'string') {
+              errorMessage = error.error.detail;
+            } else if (Array.isArray(error.error.detail)) {
+              errorMessage = error.error.detail.map((e: any) => e.msg || e.message || JSON.stringify(e)).join(', ');
+            } else {
+              errorMessage = JSON.stringify(error.error.detail);
+            }
+          } else if (error.error.message) {
+            errorMessage = error.error.message;
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        return throwError(() => new Error(errorMessage));
+      })
     );
-
-    if (validCredential) {
-      const fakeUser: User = {
-        id: validCredential.rol === 'admin' ? 1 : 2,
-        email: validCredential.rol === 'admin' ? 'admin@itm.edu.co' : 'consumidor@itm.edu.co',
-        nombre: validCredential.rol === 'admin' ? 'Administrador' : 'Consumidor',
-        apellido: 'Sistema',
-        activo: true,
-        rol: validCredential.rol
-      };
-
-      const fakeResponse: LoginResponse = {
-        access_token: 'fake_token_' + Date.now(),
-        token_type: 'Bearer',
-        user: fakeUser
-      };
-
-      return {
-        success: true,
-        message: 'Login exitoso',
-        data: fakeResponse,
-        status: 200
-      };
-    } else {
-      // Simular error de credenciales
-      throw new Error('Credenciales inválidas. Usa admin/admin123 o consumidor/consumidor123');
-    }
   }
 
   /**
@@ -129,14 +151,46 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
+  getValidUUIDForCreation(): string {
+    const currentUser = this.getCurrentUser();
+    if (currentUser?.id) {
+      const idStr = String(currentUser.id);
+      if (this.isValidUUID(idStr)) {
+        return idStr;
+      }
+    }
+    return '00000000-0000-0000-0000-000000000000';
+  }
+
+  getValidUUIDForEdition(): string | undefined {
+    const currentUser = this.getCurrentUser();
+    if (currentUser?.id) {
+      const idStr = String(currentUser.id);
+      if (this.isValidUUID(idStr)) {
+        return idStr;
+      }
+    }
+    return undefined;
+  }
+
+  private isValidUUID(uuid: string): boolean {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  }
+
   /**
    * Guarda los datos del usuario después del login
    */
   setUserData(loginResponse: LoginResponse): void {
     localStorage.setItem(this.TOKEN_KEY, loginResponse.access_token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(loginResponse.user));
-    localStorage.setItem(this.ROLE_KEY, loginResponse.user.rol);
-    this.currentUserSubject.next(loginResponse.user);
+    const role = loginResponse.user.rol || (loginResponse.user.es_admin ? 'admin' : 'consumidor');
+    localStorage.setItem(this.ROLE_KEY, role);
+    const user: User = {
+      ...loginResponse.user,
+      rol: role
+    };
+    this.currentUserSubject.next(user);
   }
 
   /**
@@ -195,11 +249,18 @@ export class AuthService {
     // Admin puede acceder a todo
     if (role === 'admin') return true;
 
-    // Consumidor solo puede acceder a productos
+    // Consumidor puede acceder a rutas limitadas del sistema hospitalario
     if (role === 'consumidor') {
-      return route === 'productos' || route === 'dashboard';
+      const allowedRoutes = [
+        'dashboard',
+        'citas',
+        'facturas',
+        'historiales-medicos'
+      ];
+      return allowedRoutes.includes(route.toLowerCase());
     }
 
-    return false;
+    // Otros roles (médico, enfermera, etc.) pueden acceder a todo excepto usuarios
+    return route !== 'usuarios';
   }
 }

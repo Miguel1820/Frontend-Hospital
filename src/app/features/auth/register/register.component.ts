@@ -46,25 +46,25 @@ import { CreateUsuarioRequest } from '../../../shared/models/usuario.model';
               </div>
 
               <div class="form-group">
-                <label for="password" class="form-label">
+                <label for="contrasena" class="form-label">
                   <span class="label-icon">🔑</span>
                   Contraseña
                 </label>
                 <input 
                   type="password" 
-                  id="password"
+                  id="contrasena"
                   class="form-control" 
-                  [(ngModel)]="registerData.password"
-                  name="password"
+                  [(ngModel)]="registerData.contrasena"
+                  name="contrasena"
                   required
                   minlength="6"
                   placeholder="••••••••"
-                  #password="ngModel"
-                  [class.is-invalid]="password.invalid && password.touched"
+                  #contrasena="ngModel"
+                  [class.is-invalid]="contrasena.invalid && contrasena.touched"
                 >
-                <div class="invalid-feedback" *ngIf="password.invalid && password.touched">
-                  <div *ngIf="password.errors?.['required']">La contraseña es requerida</div>
-                  <div *ngIf="password.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</div>
+                <div class="invalid-feedback" *ngIf="contrasena.invalid && contrasena.touched">
+                  <div *ngIf="contrasena.errors?.['required']">La contraseña es requerida</div>
+                  <div *ngIf="contrasena.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</div>
                 </div>
               </div>
 
@@ -92,25 +92,25 @@ import { CreateUsuarioRequest } from '../../../shared/models/usuario.model';
               </div>
 
               <div class="form-group">
-                <label for="apellido" class="form-label">
-                  <span class="label-icon">👥</span>
-                  Apellido
+                <label for="nombre_usuario" class="form-label">
+                  <span class="label-icon">👤</span>
+                  Nombre de Usuario
                 </label>
                 <input 
                   type="text" 
-                  id="apellido"
+                  id="nombre_usuario"
                   class="form-control" 
-                  [(ngModel)]="registerData.apellido"
-                  name="apellido"
+                  [(ngModel)]="registerData.nombre_usuario"
+                  name="nombre_usuario"
                   required
-                  minlength="2"
-                  placeholder="Tu apellido"
-                  #apellido="ngModel"
-                  [class.is-invalid]="apellido.invalid && apellido.touched"
+                  minlength="3"
+                  placeholder="Tu nombre de usuario"
+                  #nombre_usuario="ngModel"
+                  [class.is-invalid]="nombre_usuario.invalid && nombre_usuario.touched"
                 >
-                <div class="invalid-feedback" *ngIf="apellido.invalid && apellido.touched">
-                  <div *ngIf="apellido.errors?.['required']">El apellido es requerido</div>
-                  <div *ngIf="apellido.errors?.['minlength']">El apellido debe tener al menos 2 caracteres</div>
+                <div class="invalid-feedback" *ngIf="nombre_usuario.invalid && nombre_usuario.touched">
+                  <div *ngIf="nombre_usuario.errors?.['required']">El nombre de usuario es requerido</div>
+                  <div *ngIf="nombre_usuario.errors?.['minlength']">El nombre de usuario debe tener al menos 3 caracteres</div>
                 </div>
               </div>
 
@@ -292,11 +292,11 @@ import { CreateUsuarioRequest } from '../../../shared/models/usuario.model';
   `]
 })
 export class RegisterComponent implements OnInit {
-  registerData: CreateUsuarioRequest = {
+  registerData = {
     email: '',
-    password: '',
+    contrasena: '',
     nombre: '',
-    apellido: ''
+    nombre_usuario: ''
   };
   
   loading = false;
@@ -317,7 +317,14 @@ export class RegisterComponent implements OnInit {
 
     this.loading = true;
     
-    this.usuarioService.createUsuario(this.registerData).subscribe({
+    const usuarioData: CreateUsuarioRequest = {
+      nombre: this.registerData.nombre,
+      nombre_usuario: this.registerData.nombre_usuario,
+      email: this.registerData.email,
+      contraseña: this.registerData.contrasena
+    };
+    
+    this.usuarioService.createUsuario(usuarioData).subscribe({
       next: (response) => {
         this.notificationService.showSuccess('Usuario registrado exitosamente');
         this.router.navigate(['/auth/login']);
