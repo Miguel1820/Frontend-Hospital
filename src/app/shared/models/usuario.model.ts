@@ -2,35 +2,43 @@
  * Modelo para la entidad Usuario
  */
 export interface Usuario {
-  id: number;
-  email: string;
+  id: string;
   nombre: string;
-  apellido: string;
+  nombre_usuario: string;
+  email: string;
+  telefono?: string;
+  es_admin: boolean;
   activo: boolean;
   fecha_creacion: string;
-  fecha_actualizacion: string;
-  ultimo_acceso?: string;
+  fecha_actualizacion?: string;
+  id_usuario_creacion?: string;
+  id_usuario_edicion?: string;
 }
 
 /**
  * Modelo para crear un nuevo usuario
  */
 export interface CreateUsuarioRequest {
-  email: string;
-  password: string;
   nombre: string;
-  apellido: string;
-  activo?: boolean;
+  nombre_usuario: string;
+  email: string;
+  contraseña: string;
+  id_usuario_creacion?: string;
+  telefono?: string;
+  es_admin?: boolean;
 }
 
 /**
  * Modelo para actualizar un usuario
  */
 export interface UpdateUsuarioRequest {
-  email?: string;
   nombre?: string;
-  apellido?: string;
+  nombre_usuario?: string;
+  email?: string;
+  telefono?: string;
+  es_admin?: boolean;
   activo?: boolean;
+  id_usuario_edicion?: string;
 }
 
 /**
@@ -48,7 +56,7 @@ export interface UsuarioFilters {
   email?: string;
   nombre?: string;
   apellido?: string;
-  activo?: boolean;
+  activo?: boolean | string;
   fecha_desde?: string;
   fecha_hasta?: string;
 }

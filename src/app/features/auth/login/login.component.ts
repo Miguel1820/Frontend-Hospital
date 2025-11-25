@@ -61,7 +61,7 @@ import { NotificationService } from '../../../core/services/notification.service
                   name="password"
                   required
                   minlength="6"
-                  placeholder="admin123"
+                  placeholder="Admin123!@#"
                   #password="ngModel"
                   [class.is-invalid]="password.invalid && password.touched"
                 >
@@ -104,7 +104,7 @@ import { NotificationService } from '../../../core/services/notification.service
                       Administrador
                     </h4>
                     <p><strong>Usuario:</strong> admin</p>
-                    <p><strong>Contraseña:</strong> admin123</p>
+                    <p><strong>Contraseña:</strong> Admin123&#64;#</p>
                     <p class="role-info">Acceso completo a todas las funcionalidades</p>
                   </div>
                   <div class="credential-group">
@@ -412,7 +412,8 @@ export class LoginComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error en login:', error);
-        this.notificationService.showError('Error al iniciar sesión. Verifica tus credenciales.');
+        const errorMessage = error.message || 'Error al iniciar sesión. Verifica tus credenciales.';
+        this.notificationService.showError(errorMessage);
         this.loading = false;
       }
     });

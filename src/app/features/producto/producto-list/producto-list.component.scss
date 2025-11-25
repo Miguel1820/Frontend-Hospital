@@ -51,6 +51,9 @@
   margin: 1.75rem auto;
   transform: translateY(-50%);
   top: 50%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-content {
@@ -58,6 +61,10 @@
   border-radius: 0.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   background-color: white;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: hidden;
 }
 
 .modal-header {
@@ -87,6 +94,8 @@
 }
 
 .modal-body {
+  overflow-y: auto;
+  max-height: calc(90vh - 120px);
   padding: 1.5rem;
 }
 

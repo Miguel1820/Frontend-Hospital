@@ -1,0 +1,142 @@
+<div class="historial-entrada-list">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Gestión de Historiales de Entrada</h2>
+      <button class="btn btn-success" (click)="openCreateModal()">Nuevo Historial</button>
+    </div>
+    
+    <div class="card-body">
+      <div class="filters mb-3">
+        <div class="row">
+          <div class="col-md-3">
+            <select 
+              class="form-control" 
+              [(ngModel)]="filters.historial_medico_id"
+              (change)="onFilterChange()"
+            >
+              <option value="">Todos los historiales</option>
+              <option *ngFor="let historial of historialesMedicos" [value]="historial.id">
+                {{ historial.numero_historial }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-secondary" (click)="clearFilters()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Fecha Consulta</th>
+              <th>Historial Médico</th>
+              <th>Médico</th>
+              <th>Diagnóstico</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="loading">
+              <td colspan="5" class="text-center">Cargando...</td>
+            </tr>
+            <tr *ngIf="!loading && historiales.length === 0">
+              <td colspan="5" class="text-center">No hay historiales de entrada disponibles</td>
+            </tr>
+            <tr *ngFor="let historial of historiales">
+              <td>{{ historial.fecha_consulta | date:'short' }}</td>
+              <td>{{ getHistorialMedicoNumero(historial.historial_medico_id) }}</td>
+              <td>{{ getMedicoNombre(historial.medico_id) }}</td>
+              <td>{{ historial.diagnostico }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="editHistorial(historial)">Editar</button>
+                <button class="btn btn-sm btn-danger" (click)="deleteHistorial(historial)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination mt-3" *ngIf="totalPages > 1">
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === 1"
+          (click)="goToPage(currentPage - 1)"
+        >Anterior</button>
+        <span class="mx-3">Página {{ currentPage }} de {{ totalPages }}</span>
+        <button 
+          class="btn btn-secondary" 
+          [disabled]="currentPage === totalPages"
+          (click)="goToPage(currentPage + 1)"
+        >Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" [class.show]="showModal" [style.display]="showModal ? 'block' : 'none'" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ editingHistorial ? 'Editar Historial de Entrada' : 'Nuevo Historial de Entrada' }}</h5>
+          <button type="button" class="close" (click)="closeModal()"><span>&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="historialForm" (ngSubmit)="saveHistorial()">
+            <div class="form-group">
+              <label for="historial_medico_id">Historial Médico *</label>
+              <select class="form-control" id="historial_medico_id" formControlName="historial_medico_id" [class.is-invalid]="historialForm.get('historial_medico_id')?.invalid && historialForm.get('historial_medico_id')?.touched">
+                <option value="">Seleccione un historial médico</option>
+                <option *ngFor="let historial of historialesMedicos" [value]="historial.id">
+                  {{ historial.numero_historial }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="historialForm.get('historial_medico_id')?.invalid && historialForm.get('historial_medico_id')?.touched">
+                {{ getErrorMessage('historial_medico_id') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="medico_id">Médico *</label>
+              <select class="form-control" id="medico_id" formControlName="medico_id" [class.is-invalid]="historialForm.get('medico_id')?.invalid && historialForm.get('medico_id')?.touched">
+                <option value="">Seleccione un médico</option>
+                <option *ngFor="let medico of medicos" [value]="medico.id">
+                  {{ medico.nombre }} {{ medico.apellido }} - {{ medico.especialidad }}
+                </option>
+              </select>
+              <div class="invalid-feedback" *ngIf="historialForm.get('medico_id')?.invalid && historialForm.get('medico_id')?.touched">
+                {{ getErrorMessage('medico_id') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="fecha_consulta">Fecha de Consulta *</label>
+              <input type="datetime-local" class="form-control" id="fecha_consulta" formControlName="fecha_consulta" [class.is-invalid]="historialForm.get('fecha_consulta')?.invalid && historialForm.get('fecha_consulta')?.touched">
+              <div class="invalid-feedback" *ngIf="historialForm.get('fecha_consulta')?.invalid && historialForm.get('fecha_consulta')?.touched">
+                {{ getErrorMessage('fecha_consulta') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="diagnostico">Diagnóstico *</label>
+              <input type="text" class="form-control" id="diagnostico" formControlName="diagnostico" [class.is-invalid]="historialForm.get('diagnostico')?.invalid && historialForm.get('diagnostico')?.touched">
+              <div class="invalid-feedback" *ngIf="historialForm.get('diagnostico')?.invalid && historialForm.get('diagnostico')?.touched">
+                {{ getErrorMessage('diagnostico') }}
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tratamiento">Tratamiento</label>
+              <textarea class="form-control" id="tratamiento" formControlName="tratamiento" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="observaciones">Observaciones</label>
+              <textarea class="form-control" id="observaciones" formControlName="observaciones" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="saveHistorial()">{{ editingHistorial ? 'Actualizar' : 'Crear' }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
